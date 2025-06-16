@@ -142,63 +142,46 @@ fi
 
 echo "Updating import paths to use @/ alias..."
 
-# Create a temporary directory for processing files
-TMP_DIR=$(mktemp -d)
-
-# Function to convert relative imports to alias imports
-convert_imports() {
-    local file=$1
-    local basename=$(basename "$file")
-    local tmp_file="$TMP_DIR/$basename"
-    
-    echo "Processing $file"
-    
-    # Create a simple script to process the file line by line
-    cat > "$TMP_DIR/convert.awk" << 'EOF'
-    {
-        # Check if line contains import with relative path
-        if ($0 ~ /import.*from[[:space:]]*["\']\.\//) {
-            # Replace ./ with @/
-            gsub(/from[[:space:]]*["\']\.\//,"from \"@\/");
-            # Fix quote consistency
-            gsub(/\"\'/, "\"\"");
-            gsub(/\'\"/, "\'\'")
-        }
-        # Check for ../ imports (parent directory)
-        else if ($0 ~ /import.*from[[:space:]]*["\']\.\.\// ) {
-            # Replace ../ with @/
-            gsub(/from[[:space:]]*["\']\.\.\//, "from \"@\/");
-            # Fix quote consistency
-            gsub(/\"\'/, "\"\"");
-            gsub(/\'\"/, "\'\'")
-        }
-        # Print the line (modified or not)
-        print;
-    }
-EOF
-    
-    # Process the file with awk
-    awk -f "$TMP_DIR/convert.awk" "$file" > "$tmp_file"
-    
-    # Replace the original file with the processed one
-    cat "$tmp_file" > "$file"
-    
-    echo "✓ Updated imports in $file"
-}
-
-# Find all TypeScript files and update imports
+# Find all TypeScript files in the src directory
 if [ -d "src" ]; then
-    echo "Finding all TypeScript files..."
+    echo "Finding TypeScript files..."
+    
+    # Process each TypeScript file
     find src -type f -name "*.ts" | while read -r file; do
-        convert_imports "$file"
+        echo "Processing $file"
+        
+        # Create a temporary file
+        temp_file="${file}.tmp"
+        
+        # Check if file contains relative imports
+        if grep -q "from ['\"]\(\.\|\.\.\/\)" "$file"; then
+            # Process the file with sed to replace imports
+            # Replace './path' with '@/path'
+            sed 's/from[[:space:]]*["\']\.\/\([^"\'\\/]*\)["\']\(.*\)/from "@\/\1"\2/g' "$file" > "$temp_file"
+            mv "$temp_file" "$file"
+            
+            # Replace '../path' with '@/path'
+            sed 's/from[[:space:]]*["\']\.\.\(\/[^"\'\\/]*\)["\']\(.*\)/from "@\1"\2/g' "$file" > "$temp_file"
+            mv "$temp_file" "$file"
+            
+            # Replace '../../path' with '@/path'
+            sed 's/from[[:space:]]*["\']\.\.\/.\.\/\([^"\'\\/]*\)["\']\(.*\)/from "@\/\1"\2/g' "$file" > "$temp_file"
+            mv "$temp_file" "$file"
+            
+            # Replace '../../../path' with '@/path'
+            sed 's/from[[:space:]]*["\']\.\.\/.\.\/\.\.\(\/[^"\'\\/]*\)["\']\(.*\)/from "@\1"\2/g' "$file" > "$temp_file"
+            mv "$temp_file" "$file"
+            
+            echo "Updated imports in $file"
+        else
+            echo "No relative imports found in $file"
+        fi
     done
+    
     echo "Updated import paths in all TypeScript files to use @/ alias"
 else
     echo "Warning: src directory not found, skipping import path updates"
 fi
-
-# Clean up temporary directory
-rm -rf "$TMP_DIR"
 
 ### ========================================================================== ###
 ###                                  TEST                                      ###
