@@ -103,4 +103,23 @@ nest generate service auth
 echo "Generating extra files..."
 
 # create constant.ts on ./src/constants.ts
-echo "export type RoleCode = 'ADMIN' | 'CUSTOMER';\n" > src/constants.ts
+echo "export type RoleCode = 'ADMIN' | 'CUSTOMER';\\n" > src/constants.ts
+
+### ========================================================================== ###
+###                               REVISION FILES                               ###
+### ========================================================================== ###
+
+echo "Revision files..."
+
+# tsconfig.json input paths menjadi @/*
+# Use jq to update tsconfig.json with paths configuration
+if command -v jq &> /dev/null; then
+    # If jq is available, use it to properly update the JSON
+    jq '.compilerOptions.paths = {"@/*": ["src/*"]}' tsconfig.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.json
+    echo "Updated tsconfig.json with paths configuration using jq"
+else
+    # Fallback to sed if jq is not available
+    # This is less reliable but works in many cases
+    sed -i 's/"compilerOptions": {/"compilerOptions": {\n    "paths": {\n      "@\/*": ["src\/*"]\n    },/g' tsconfig.json
+    echo "Updated tsconfig.json with paths configuration using sed"
+fi
