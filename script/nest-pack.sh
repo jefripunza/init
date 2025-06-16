@@ -1,4 +1,5 @@
 #!/bin/bash
+# description: fast init NestJS project with user module and authorization with JWT
 # example: curl -fsSL https://init.jefripunza.com/nest-pack.sh | bash -s -- my-project-name
 
 set -e # Exit immediately if a command exits with a non-zero status
@@ -7,7 +8,6 @@ set -e # Exit immediately if a command exits with a non-zero status
 set -o pipefail # Cause a pipeline to return the status of the last command that exited with a non-zero status
 
 DATE=$(date +"%Y%m%d-%H%M%S")
-OS_TYPE=$(grep -w "ID" /etc/os-release | cut -d "=" -f 2 | tr -d '"')
 CURRENT_USER=$USER
 
 # check apakah di command ada "nest", kalau belum ada di install
