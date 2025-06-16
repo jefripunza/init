@@ -224,3 +224,18 @@ if [ -d "src" ]; then
 else
     echo "Warning: src directory not found, skipping import path updates"
 fi
+
+### ========================================================================== ###
+###                                  TEST                                      ###
+### ========================================================================== ###
+
+echo "Testing..."
+
+yarn build
+yarn test
+
+### ========================================================================== ###
+
+echo "Done!"
+popd
+rm -rf nest-pack.sh
