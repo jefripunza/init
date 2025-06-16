@@ -150,18 +150,54 @@ if [ -d "src" ]; then
     find src -type f -name "*.ts" | while read -r file; do
         echo "Processing $file"
         
-        # Use perl for more robust pattern matching
-        # 1. Replace './something' with '@/something'
-        perl -i -pe "s/from (['\"])\.\/([^'\"]+)\1/from \1@\/\2\1/g" "$file"
+        # Get the current file's directory relative to src
+        # This helps us calculate the correct import paths
+        rel_dir=$(dirname "$file" | sed 's|^src/||')
         
-        # 2. Replace '../something' with '@/something'
-        perl -i -pe "s/from (['\"])\.\.\/([^'\"]+)\1/from \1@\/\2\1/g" "$file"
+        # Create a temporary file
+        temp_file="${file}.tmp"
         
-        # 3. Replace '../../something' with '@/something'
-        perl -i -pe "s/from (['\"])\.\.\/.\.\/([^'\"]+)\1/from \1@\/\2\1/g" "$file"
+        # Process the file line by line to handle imports correctly
+        while IFS= read -r line; do
+            # Check if this line contains an import with relative path
+            if [[ $line =~ from[[:space:]]*["\']\./|from[[:space:]]*["\']\.\./ ]]; then
+                # Case 1: Handle './file' imports
+                if [[ $line =~ from[[:space:]]*["\']\.\/([^"\'\.]+) ]]; then
+                    # For same directory imports, use current directory in path
+                    if [ "$rel_dir" = "." ]; then
+                        # Root src directory
+                        line=$(echo "$line" | sed "s|from[[:space:]]*[\"']\./\([^\"']*\)[\"']|from \"@/\1\"|g")
+                    else
+                        # Nested directory - include the directory in the path
+                        line=$(echo "$line" | sed "s|from[[:space:]]*[\"']\./\([^\"']*\)[\"']|from \"@/$rel_dir/\1\"|g")
+                    fi
+                
+                # Case 2: Handle '../file' imports (go up one directory)
+                elif [[ $line =~ from[[:space:]]*["\']\.\./ ]]; then
+                    # Calculate the target directory by going up one level
+                    parent_dir=$(dirname "$rel_dir")
+                    if [ "$parent_dir" = "." ]; then
+                        parent_dir=""
+                    fi
+                    
+                    # Extract the imported file/module name
+                    import_name=$(echo "$line" | sed -E "s|.*from[[:space:]]*[\"']\.\./([^\"']+)[\"'].*|\1|")
+                    
+                    # Replace with @/ path
+                    if [ -z "$parent_dir" ]; then
+                        line=$(echo "$line" | sed "s|from[[:space:]]*[\"']\.\./[^\"']*[\"']|from \"@/$import_name\"|")
+                    else
+                        line=$(echo "$line" | sed "s|from[[:space:]]*[\"']\.\./[^\"']*[\"']|from \"@/$parent_dir/$import_name\"|")
+                    fi
+                fi
+            fi
+            
+            # Write the processed line to temp file
+            echo "$line" >> "$temp_file"
+        done < "$file"
         
-        # 4. Replace '../../../something' with '@/something'
-        perl -i -pe "s/from (['\"])\.\.\/.\.\/\.\.\/([^'\"]+)\1/from \1@\/\2\1/g" "$file"
+        # Replace original with processed file
+        mv "$temp_file" "$file"
         
         # Check if any replacements were made
         if grep -q "from ['\"]@\/" "$file"; then
