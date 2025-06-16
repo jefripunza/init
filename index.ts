@@ -284,6 +284,20 @@ app.get("/:script_name", (req, res) => {
           .command-container {
             position: relative;
           }
+          .script-content-container {
+            margin-top: 20px;
+          }
+          .script-content {
+            white-space: pre;
+            font-family: monospace;
+            line-height: 1.5;
+          }
+          h2 {
+            margin-top: 30px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+          }
         </style>
       </head>
       <body>
@@ -300,6 +314,11 @@ app.get("/:script_name", (req, res) => {
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </button>
+        </div>
+        
+        <h2>Script Content</h2>
+        <div class="script-content-container">
+          <pre><code class="script-content">${scriptContent.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
         </div>
 
         <script>
