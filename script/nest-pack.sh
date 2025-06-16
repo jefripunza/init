@@ -11,13 +11,35 @@ DATE=$(date +"%Y%m%d-%H%M%S")
 CURRENT_USER=$USER
 
 ### ========================================================================== ###
+###                               INITIALIZATION                               ###
+### ========================================================================== ###
+
+### check apakah di command ada "bun", kalau belum ada di install
+if ! command -v bun &> /dev/null; then
+    echo "bun not found, installing..."
+    curl -fsSL https://bun.sh/install | bash
+fi
+
+# check apakah di command ada "yarn", kalau belum ada di install
+if ! command -v yarn &> /dev/null; then
+    echo "yarn not found, installing..."
+    bun install -g yarn
+fi
+
+# check apakah di command ada "pnpm", kalau belum ada di install
+if ! command -v pnpm &> /dev/null; then
+    echo "pnpm not found, installing..."
+    bun install -g pnpm
+fi
+
+### ========================================================================== ###
 ###                             CREATE PROJECT                                 ###
 ### ========================================================================== ###
 
 ### check apakah di command ada "nest", kalau belum ada di install
 if ! command -v nest &> /dev/null; then
     echo "nest not found, installing..."
-    bun add -g @nestjs/cli
+    bun install -g @nestjs/cli
 fi
 
 if [ -z "$1" ]; then
@@ -39,7 +61,7 @@ module_list=("jsonwebtoken" "dotenv" "@nestjs/config")
 
 # loop array dan install module
 for module in "${module_list[@]}"; do
-    bun add $module
+    bun install $module
 done
 
 ### ========================================================================== ###
