@@ -7,4 +7,4 @@ if ! command -v nest &> /dev/null; then
 fi
 
 # argument 1 adalah nama project
-nest new $1
+nest new
