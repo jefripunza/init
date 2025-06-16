@@ -801,11 +801,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '@/auth/auth.service';
 import { UserService } from '@/user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@/config/config.service';
 
 describe('AuthService', () => {
   let service: AuthService;
   let userService: UserService;
   let jwtService: JwtService;
+  let configService: ConfigService;
 
   const mockUserService = {
     findByEmail: jest.fn(),
@@ -817,6 +819,11 @@ describe('AuthService', () => {
     sign: jest.fn(),
     verify: jest.fn(),
     verifyAsync: jest.fn(),
+  };
+
+  const mockConfigService = {
+    jwtSecret: 'test-secret',
+    jwtExpiresIn: '1h',
   };
 
   beforeEach(async () => {
@@ -831,12 +838,17 @@ describe('AuthService', () => {
           provide: JwtService,
           useValue: mockJwtService,
         },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
+        },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     userService = module.get<UserService>(UserService);
     jwtService = module.get<JwtService>(JwtService);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {
@@ -923,7 +935,6 @@ import { ConfigModule } from '@/config/config.module';
   exports: [],
 })
 export class AuthModule {}
-
 EOL
 
 
@@ -1104,6 +1115,44 @@ generate "./test/jest-e2e.json" << 'EOL'
     "^@/(.*)$": "<rootDir>/../src/$1"
   }
 }
+EOL
+
+# create .env.example
+generate ".env.example" << 'EOL'
+# Node environment: development, production, test
+NODE_ENV=
+
+# Server configuration
+PORT=
+
+# Database configuration
+DB_TYPE=
+# DB_HOST=localhost  # Required for postgres, mysql, mariadb
+# DB_PORT=5432       # Required for postgres, mysql, mariadb
+# DB_USERNAME=postgres  # Required for postgres, mysql, mariadb
+# DB_PASSWORD=postgres  # Required for postgres, mysql, mariadb
+DB_NAME=
+DB_SYNCHRONIZE=
+
+# JWT configuration
+JWT_SECRET=
+JWT_EXPIRES_IN=
+
+# Admin user seed configuration
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
+EOL
+
+# create .env.test
+generate ".env.test" << 'EOL'
+NODE_ENV=test
+JWT_SECRET=test-secret-key
+JWT_EXPIRES_IN=1h
+DB_TYPE=sqlite
+DB_NAME=db.sqlite
+DB_SYNCHRONIZE=true
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=admin123
 EOL
 
 ### ========================================================================== ###
