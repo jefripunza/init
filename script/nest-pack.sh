@@ -9,6 +9,7 @@ set -o pipefail # Cause a pipeline to return the status of the last command that
 
 DATE=$(date +"%Y%m%d-%H%M%S")
 CURRENT_USER=$USER
+rm -rf nest-pack.sh
 
 ### ========================================================================== ###
 ###                               INITIALIZATION                               ###
@@ -51,7 +52,7 @@ if [ -z "$1" ]; then
     exit 1
 fi
 project_name=$1
-nest new $project_name
+nest new $project_name --package-manager bun
 
 ### ========================================================================== ###
 ###                               INSTALLATION                                 ###
@@ -238,4 +239,3 @@ yarn test
 
 echo "Done!"
 popd
-rm -rf nest-pack.sh
