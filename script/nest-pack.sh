@@ -167,14 +167,13 @@ files.forEach(file => {
   
   // Replace imports with regex patterns
   // 1. Handle './something' imports
-  if (content.match(/from ['"]\.\/[^'"]+['"]/))
-  {
-    if (relDir === '.') {
-      // Root src directory
-      content = content.replace(/from (['"])\.\/([^'"]+)\1/g, 'from $1@/$2$1');
+  if (content.match(/from ['"]\.\//)) {
+    if (relDir === '.' || relDir === '') {
+      // Root src directory - avoid double slash
+      content = content.replace(/from (['"]).\/(.*?)\1/g, 'from $1@/$2$1');
     } else {
       // Nested directory
-      content = content.replace(/from (['"])\.\/([^'"]+)\1/g, `from $1@/${relDir}/$2$1`);
+      content = content.replace(/from (['"]).\/(.*?)\1/g, `from $1@/${relDir}/$2$1`);
     }
     updated = true;
   }
@@ -184,20 +183,21 @@ files.forEach(file => {
     const parentDir = path.dirname(relDir) === '.' ? '' : path.dirname(relDir);
     
     // Extract the path after '../' and calculate the correct absolute path
-    content = content.replace(/from (['"])\.\.\/([^'"]+)\1/g, (match, quote, importPath) => {
+    content = content.replace(/from (['"])..\/([^'"]+)\1/g, (match, quote, importPath) => {
+      // Avoid double slashes by checking if parentDir is empty
       return `from ${quote}@/${parentDir ? parentDir + '/' : ''}${importPath}${quote}`;
     });
     updated = true;
   }
   
   // 3. Handle '../../something' imports
-  if (content.match(/from ['"]\.\.\/.\.\//))
-  {
+  if (content.match(/from ['"]\.\.\/.\.\//)) {
     // Go up two directory levels
     const parts = relDir.split('/');
     const grandParentDir = parts.length > 1 ? parts.slice(0, -2).join('/') : '';
     
-    content = content.replace(/from (['"])\.\.\/.\.\/([^'"]+)\1/g, (match, quote, importPath) => {
+    content = content.replace(/from (['"])..\/..\/(.*?)\1/g, (match, quote, importPath) => {
+      // Avoid double slashes by checking if grandParentDir is empty
       return `from ${quote}@/${grandParentDir ? grandParentDir + '/' : ''}${importPath}${quote}`;
     });
     updated = true;
