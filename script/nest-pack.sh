@@ -14,6 +14,8 @@ CURRENT_USER=$USER
 ###                               INITIALIZATION                               ###
 ### ========================================================================== ###
 
+echo "Initializing..."
+
 ### check apakah di command ada "bun", kalau belum ada di install
 if ! command -v bun &> /dev/null; then
     echo "bun not found, installing..."
@@ -36,6 +38,8 @@ fi
 ###                             CREATE PROJECT                                 ###
 ### ========================================================================== ###
 
+echo "Creating project..."
+
 ### check apakah di command ada "nest", kalau belum ada di install
 if ! command -v nest &> /dev/null; then
     echo "nest not found, installing..."
@@ -53,20 +57,33 @@ nest new $project_name
 ###                               INSTALLATION                                 ###
 ### ========================================================================== ###
 
+echo "Installing module..."
+
 # masuk ke folder project
 pushd $project_name
 
 # buat variable array untuk module apa saja yang ingin ditambahkan custom
-module_list=("jsonwebtoken" "dotenv" "@nestjs/config")
+module_list=("@nestjs/config" "@nestjs/jwt" "@nestjs/microservices" "@nestjs/passport" "@nestjs/platform-express" "@nestjs/typeorm" "bcrypt" "class-transformer" "class-validator" "dotenv" "passport" "passport-jwt" "reflect-metadata" "rxjs" "typeorm" "uuid")
+module_list_dev=("@types/bcrypt")
 
 # loop array dan install module
 for module in "${module_list[@]}"; do
     bun install $module
 done
 
+# loop array dan install module dev
+for module in "${module_list_dev[@]}"; do
+    bun install --dev $module
+done
+
 ### ========================================================================== ###
 ###                               GENERATION                                   ###
 ### ========================================================================== ###
+
+echo "Generating module..."
+
+# remove git
+rm -rf .git
 
 # full package for User
 nest generate module user
@@ -77,3 +94,13 @@ nest generate service user
 nest generate module auth
 nest generate controller auth
 nest generate service auth
+
+
+### ========================================================================== ###
+###                               EXTRA FILES                                  ###
+### ========================================================================== ###
+
+echo "Generating extra files..."
+
+# create constant.ts on ./src/constants.ts
+echo "export type RoleCode = 'ADMIN' | 'CUSTOMER';\n" > src/constants.ts
