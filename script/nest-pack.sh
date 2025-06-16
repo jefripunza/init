@@ -151,7 +151,6 @@ export class User {
 EOL
 echo "✓ Created user.entity.ts"
 
-
 ### ========================================================================== ###
 ###                               REVISION FILES                               ###
 ### ========================================================================== ###
@@ -181,156 +180,6 @@ else
     # This approach is less reliable but works in many cases
     sed -i 's/"jest": {/"jest": {\n    "moduleNameMapper": {\n      "\^@\/\(.*\)\$": "<rootDir>\/..\/src\/\$1"\n    },/g' package.json
     echo "Updated package.json with Jest moduleNameMapper configuration using sed"
-fi
-
-# Add TypeORM configuration to app.module.ts
-echo "Adding TypeORM configuration to app.module.ts..."
-
-# Create a temporary file for processing app.module.ts
-if [ -f "src/app.module.ts" ]; then
-    # Create a Node.js script to update the app.module.ts file
-    cat > update-app-module.js << 'EOL'
-const fs = require('fs');
-const path = require('path');
-
-// Read the app.module.ts file
-const appModulePath = 'src/app.module.ts';
-let content = fs.readFileSync(appModulePath, 'utf-8');
-
-// Add TypeOrmModule import if not already present
-if (!content.includes('TypeOrmModule')) {
-  // Find the last import statement
-  const importRegex = /import.*from.*[;]\s*$/m;
-  const lastImport = content.match(new RegExp(importRegex.source + '(?![^]*' + importRegex.source + ')', 'm'));
-  
-  if (lastImport) {
-    // Add TypeOrmModule import after the last import
-    content = content.replace(
-      lastImport[0],
-      `${lastImport[0]}\nimport { TypeOrmModule } from '@nestjs/typeorm';`
-    );
-  }
-}
-
-// Add TypeOrmModule.forRoot to the imports array if not already present
-if (!content.includes('TypeOrmModule.forRoot')) {
-  // Find the imports array in the @Module decorator
-  const importsRegex = /imports:\s*\[(.*?)\]/s;
-  const importsMatch = content.match(importsRegex);
-  
-  if (importsMatch) {
-    const currentImports = importsMatch[1].trim();
-    const newImports = currentImports.length > 0 
-      ? `${currentImports},\n    TypeOrmModule.forRoot({\n      type: 'sqlite',\n      database: 'db.sqlite',\n      entities: [__dirname + '/**/*.entity{.ts,.js}'],\n      synchronize: true, // Jangan pakai di production\n    })` 
-      : `\n    TypeOrmModule.forRoot({\n      type: 'sqlite',\n      database: 'db.sqlite',\n      entities: [__dirname + '/**/*.entity{.ts,.js}'],\n      synchronize: true, // Jangan pakai di production\n    })\n  `;
-    
-    content = content.replace(importsRegex, `imports: [${newImports}]`);
-  }
-}
-
-// Write the updated content back to the file
-fs.writeFileSync(appModulePath, content);
-console.log('✓ Updated app.module.ts with TypeORM configuration');
-EOL
-
-    # Run the Node.js script
-    node update-app-module.js
-    
-    # Clean up the temporary script
-    rm -f update-app-module.js
-else
-    echo "Warning: src/app.module.ts not found, skipping TypeORM configuration"
-fi
-
-# Replace user.service.ts content with TypeORM repository implementation
-echo "Updating user.service.ts with TypeORM repository implementation..."
-if [ -f "src/user/user.service.ts" ]; then
-    cat > src/user/user.service.ts << 'EOL'
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from '@/user/user.entity';
-
-@Injectable()
-export class UserService {
-  constructor(
-    @InjectRepository(User)
-    private userRepo: Repository<User>,
-  ) {}
-
-  async create(email: string, password: string) {
-    const user = this.userRepo.create({ email, password });
-    return this.userRepo.save(user);
-  }
-
-  async findByEmail(email: string) {
-    return this.userRepo.findOne({ where: { email } });
-  }
-
-  async findById(id: number) {
-    return this.userRepo.findOne({ where: { id } });
-  }
-}
-EOL
-    echo "✓ Updated user.service.ts"
-else
-    echo "Warning: src/user/user.service.ts not found, skipping update"
-fi
-
-# Update user.module.ts to import TypeOrmModule.forFeature
-echo "Updating user.module.ts to import TypeOrmModule.forFeature..."
-if [ -f "src/user/user.module.ts" ]; then
-    # Create a Node.js script to update the user.module.ts file
-    cat > update-user-module.js << 'EOL'
-const fs = require('fs');
-
-// Read the user.module.ts file
-const userModulePath = 'src/user/user.module.ts';
-let content = fs.readFileSync(userModulePath, 'utf-8');
-
-// Add TypeOrmModule import if not already present
-if (!content.includes('TypeOrmModule')) {
-  // Find the last import statement
-  const importRegex = /import.*from.*[;]\s*$/m;
-  const lastImport = content.match(new RegExp(importRegex.source + '(?![^]*' + importRegex.source + ')', 'm'));
-  
-  if (lastImport) {
-    // Add TypeOrmModule import after the last import
-    content = content.replace(
-      lastImport[0],
-      `${lastImport[0]}\nimport { TypeOrmModule } from '@nestjs/typeorm';\nimport { User } from './user.entity';`
-    );
-  }
-}
-
-// Add TypeOrmModule.forFeature to the imports array if not already present
-if (!content.includes('TypeOrmModule.forFeature')) {
-  // Find the imports array in the @Module decorator
-  const importsRegex = /imports:\s*\[(.*?)\]/s;
-  const importsMatch = content.match(importsRegex);
-  
-  if (importsMatch) {
-    const currentImports = importsMatch[1].trim();
-    const newImports = currentImports.length > 0 
-      ? `${currentImports}, TypeOrmModule.forFeature([User])` 
-      : `TypeOrmModule.forFeature([User])`;
-    
-    content = content.replace(importsRegex, `imports: [${newImports}]`);
-  }
-}
-
-// Write the updated content back to the file
-fs.writeFileSync(userModulePath, content);
-console.log('✓ Updated user.module.ts');
-EOL
-
-    # Run the Node.js script
-    node update-user-module.js
-    
-    # Clean up the temporary script
-    rm -f update-user-module.js
-else
-    echo "Warning: src/user/user.module.ts not found, skipping update"
 fi
 
 ### ========================================================================== ###
@@ -421,6 +270,12 @@ EOL
 else
     echo "Warning: src directory not found, skipping import path updates"
 fi
+
+### ========================================================================== ###
+###                                REPLACEMENT                                 ###
+### ========================================================================== ###
+
+echo "Replacing..."
 
 ### ========================================================================== ###
 ###                                  TEST                                      ###
