@@ -77,6 +77,7 @@ module_list=(
     "bcrypt"
     "passport"
     "passport-jwt"
+    "joi"
 
     "class-transformer"
     "class-validator"
