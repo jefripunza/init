@@ -120,6 +120,8 @@ nest generate service user
 nest generate module auth
 nest generate controller auth
 nest generate service auth
+nest generate guard auth
+nest generate decorator auth
 
 
 ### ========================================================================== ###
@@ -272,10 +274,33 @@ else
 fi
 
 ### ========================================================================== ###
-###                                REPLACEMENT                                 ###
+###                            NEW or REPLACEMENT                              ###
 ### ========================================================================== ###
 
 echo "Replacing..."
+
+# Function to create a new file or replace an existing one
+new_or_replace() {
+    local file_path="$1"
+    local content="$2"
+    
+    # Create directory if it doesn't exist
+    mkdir -p "$(dirname "$file_path")"
+    
+    # Check if file exists
+    if [ -f "$file_path" ]; then
+        echo "Replacing existing file: $file_path"
+    else
+        echo "Creating new file: $file_path"
+    fi
+    
+    # Write content to file
+    echo "$content" > "$file_path"
+    echo "✓ File operation completed: $file_path"
+}
+
+# new user entity
+new_or_replace "./src/user/user.entity.ts" "import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';\n\n@Entity()\nexport class User {\n  @PrimaryGeneratedColumn()\n  id: number;\n\n  @Column({ unique: true })\n  email: string;\n\n  @Column()\n  password: string;\n}"
 
 ### ========================================================================== ###
 ###                                  TEST                                      ###
