@@ -146,66 +146,79 @@ echo "Updating import paths to use @/ alias..."
 if [ -d "src" ]; then
     echo "Finding TypeScript files..."
     
-    # Process each TypeScript file recursively
-    find src -type f -name "*.ts" | while read -r file; do
-        echo "Processing $file"
-        
-        # Get the current file's directory relative to src
-        # This helps us calculate the correct import paths
-        rel_dir=$(dirname "$file" | sed 's|^src/||')
-        
-        # Create a temporary file
-        temp_file="${file}.tmp"
-        
-        # Process the file line by line to handle imports correctly
-        while IFS= read -r line; do
-            # Check if this line contains an import with relative path
-            if [[ $line =~ from[[:space:]]*["\']\./|from[[:space:]]*["\']\.\./ ]]; then
-                # Case 1: Handle './file' imports
-                if [[ $line =~ from[[:space:]]*["\']\.\/([^"\'\.]+) ]]; then
-                    # For same directory imports, use current directory in path
-                    if [ "$rel_dir" = "." ]; then
-                        # Root src directory
-                        line=$(echo "$line" | sed "s|from[[:space:]]*[\"']\./\([^\"']*\)[\"']|from \"@/\1\"|g")
-                    else
-                        # Nested directory - include the directory in the path
-                        line=$(echo "$line" | sed "s|from[[:space:]]*[\"']\./\([^\"']*\)[\"']|from \"@/$rel_dir/\1\"|g")
-                    fi
-                
-                # Case 2: Handle '../file' imports (go up one directory)
-                elif [[ $line =~ from[[:space:]]*["\']\.\./ ]]; then
-                    # Calculate the target directory by going up one level
-                    parent_dir=$(dirname "$rel_dir")
-                    if [ "$parent_dir" = "." ]; then
-                        parent_dir=""
-                    fi
-                    
-                    # Extract the imported file/module name
-                    import_name=$(echo "$line" | sed -E "s|.*from[[:space:]]*[\"']\.\./([^\"']+)[\"'].*|\1|")
-                    
-                    # Replace with @/ path
-                    if [ -z "$parent_dir" ]; then
-                        line=$(echo "$line" | sed "s|from[[:space:]]*[\"']\.\./[^\"']*[\"']|from \"@/$import_name\"|")
-                    else
-                        line=$(echo "$line" | sed "s|from[[:space:]]*[\"']\.\./[^\"']*[\"']|from \"@/$parent_dir/$import_name\"|")
-                    fi
-                fi
-            fi
-            
-            # Write the processed line to temp file
-            echo "$line" >> "$temp_file"
-        done < "$file"
-        
-        # Replace original with processed file
-        mv "$temp_file" "$file"
-        
-        # Check if any replacements were made
-        if grep -q "from ['\"]@\/" "$file"; then
-            echo "✓ Updated imports in $file"
-        else
-            echo "No relative imports found or updated in $file"
-        fi
-    done
+    # Create a Node.js script to handle the import path updates
+    # This is much more reliable than complex shell script regex
+    cat > update-imports.js << 'EOL'
+const fs = require('fs');
+const path = require('path');
+
+// Get list of files from stdin (one file per line)
+const files = fs.readFileSync(0, 'utf-8').trim().split('\n');
+
+files.forEach(file => {
+  console.log(`Processing ${file}`);
+  
+  // Get the directory relative to src
+  const relDir = path.dirname(file).replace(/^src[\\/]?/, '');
+  
+  // Read the file content
+  let content = fs.readFileSync(file, 'utf-8');
+  let updated = false;
+  
+  // Replace imports with regex patterns
+  // 1. Handle './something' imports
+  if (content.match(/from ['"]\.\/[^'"]+['"]/))
+  {
+    if (relDir === '.') {
+      // Root src directory
+      content = content.replace(/from (['"])\.\/([^'"]+)\1/g, 'from $1@/$2$1');
+    } else {
+      // Nested directory
+      content = content.replace(/from (['"])\.\/([^'"]+)\1/g, `from $1@/${relDir}/$2$1`);
+    }
+    updated = true;
+  }
+  
+  // 2. Handle '../something' imports
+  if (content.match(/from ['"]\.\.\//)) {
+    const parentDir = path.dirname(relDir) === '.' ? '' : path.dirname(relDir);
+    
+    // Extract the path after '../' and calculate the correct absolute path
+    content = content.replace(/from (['"])\.\.\/([^'"]+)\1/g, (match, quote, importPath) => {
+      return `from ${quote}@/${parentDir ? parentDir + '/' : ''}${importPath}${quote}`;
+    });
+    updated = true;
+  }
+  
+  // 3. Handle '../../something' imports
+  if (content.match(/from ['"]\.\.\/.\.\//))
+  {
+    // Go up two directory levels
+    const parts = relDir.split('/');
+    const grandParentDir = parts.length > 1 ? parts.slice(0, -2).join('/') : '';
+    
+    content = content.replace(/from (['"])\.\.\/.\.\/([^'"]+)\1/g, (match, quote, importPath) => {
+      return `from ${quote}@/${grandParentDir ? grandParentDir + '/' : ''}${importPath}${quote}`;
+    });
+    updated = true;
+  }
+  
+  // Write the updated content back to the file
+  fs.writeFileSync(file, content);
+  
+  if (updated) {
+    console.log(`✓ Updated imports in ${file}`);
+  } else {
+    console.log(`No relative imports found or updated in ${file}`);
+  }
+});
+EOL
+    
+    # Find all TypeScript files and pipe them to the Node.js script
+    find src -type f -name "*.ts" | bun run update-imports.js
+    
+    # Clean up the temporary script
+    rm -f update-imports.js
     
     echo "Updated import paths in all TypeScript files to use @/ alias"
 else
