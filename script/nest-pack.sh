@@ -146,35 +146,28 @@ echo "Updating import paths to use @/ alias..."
 if [ -d "src" ]; then
     echo "Finding TypeScript files..."
     
-    # Process each TypeScript file
+    # Process each TypeScript file recursively
     find src -type f -name "*.ts" | while read -r file; do
         echo "Processing $file"
         
-        # Create a temporary file
-        temp_file="${file}.tmp"
+        # Use perl for more robust pattern matching
+        # 1. Replace './something' with '@/something'
+        perl -i -pe "s/from (['\"])\.\/([^'\"]+)\1/from \1@\/\2\1/g" "$file"
         
-        # Check if file contains relative imports
-        if grep -q "from ['\"]\(\.\|\.\.\/\)" "$file"; then
-            # Process the file with sed to replace imports
-            # Replace './path' with '@/path'
-            sed 's/from[[:space:]]*["\']\.\/\([^"\'\\/]*\)["\']\(.*\)/from "@\/\1"\2/g' "$file" > "$temp_file"
-            mv "$temp_file" "$file"
-            
-            # Replace '../path' with '@/path'
-            sed 's/from[[:space:]]*["\']\.\.\(\/[^"\'\\/]*\)["\']\(.*\)/from "@\1"\2/g' "$file" > "$temp_file"
-            mv "$temp_file" "$file"
-            
-            # Replace '../../path' with '@/path'
-            sed 's/from[[:space:]]*["\']\.\.\/.\.\/\([^"\'\\/]*\)["\']\(.*\)/from "@\/\1"\2/g' "$file" > "$temp_file"
-            mv "$temp_file" "$file"
-            
-            # Replace '../../../path' with '@/path'
-            sed 's/from[[:space:]]*["\']\.\.\/.\.\/\.\.\(\/[^"\'\\/]*\)["\']\(.*\)/from "@\1"\2/g' "$file" > "$temp_file"
-            mv "$temp_file" "$file"
-            
-            echo "Updated imports in $file"
+        # 2. Replace '../something' with '@/something'
+        perl -i -pe "s/from (['\"])\.\.\/([^'\"]+)\1/from \1@\/\2\1/g" "$file"
+        
+        # 3. Replace '../../something' with '@/something'
+        perl -i -pe "s/from (['\"])\.\.\/.\.\/([^'\"]+)\1/from \1@\/\2\1/g" "$file"
+        
+        # 4. Replace '../../../something' with '@/something'
+        perl -i -pe "s/from (['\"])\.\.\/.\.\/\.\.\/([^'\"]+)\1/from \1@\/\2\1/g" "$file"
+        
+        # Check if any replacements were made
+        if grep -q "from ['\"]@\/" "$file"; then
+            echo "✓ Updated imports in $file"
         else
-            echo "No relative imports found in $file"
+            echo "No relative imports found or updated in $file"
         fi
     done
     
