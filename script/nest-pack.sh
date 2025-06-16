@@ -103,6 +103,37 @@ for module in "${module_list_dev[@]}"; do
 done
 
 ### ========================================================================== ###
+###                               REVISION FILES                               ###
+### ========================================================================== ###
+
+echo "Revision files..."
+
+# tsconfig.json input paths menjadi @/*
+# Use jq to update tsconfig.json with paths configuration
+if command -v jq &> /dev/null; then
+    # If jq is available, use it to properly update the JSON
+    jq '.compilerOptions.paths = {"@/*": ["src/*"]}' tsconfig.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.json
+    echo "Updated tsconfig.json with paths configuration using jq"
+else
+    # Fallback to sed if jq is not available
+    # This is less reliable but works in many cases
+    sed -i 's/"compilerOptions": {/"compilerOptions": {\n    "paths": {\n      "@\/*": ["src\/*"]\n    },/g' tsconfig.json
+    echo "Updated tsconfig.json with paths configuration using sed"
+fi
+
+# Update package.json to add moduleNameMapper in Jest configuration
+if command -v jq &> /dev/null; then
+    # If jq is available, use it to properly update the JSON
+    jq '.jest.moduleNameMapper = {"^@/(.*)$": "<rootDir>/../src/$1"}' package.json > package.tmp.json && mv package.tmp.json package.json
+    echo "Updated package.json with Jest moduleNameMapper configuration using jq"
+else
+    # Fallback to sed if jq is not available
+    # This approach is less reliable but works in many cases
+    sed -i 's/"jest": {/"jest": {\n    "moduleNameMapper": {\n      "\^@\/\(.*\)\$": "<rootDir>\/..\/src\/\$1"\n    },/g' package.json
+    echo "Updated package.json with Jest moduleNameMapper configuration using sed"
+fi
+
+### ========================================================================== ###
 ###                               GENERATION                                   ###
 ### ========================================================================== ###
 
