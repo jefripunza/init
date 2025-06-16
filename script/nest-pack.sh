@@ -142,88 +142,63 @@ fi
 
 echo "Updating import paths to use @/ alias..."
 
-# Function to update imports in TypeScript files
-update_imports() {
+# Create a temporary directory for processing files
+TMP_DIR=$(mktemp -d)
+
+# Function to convert relative imports to alias imports
+convert_imports() {
     local file=$1
-    local file_dir=$(dirname "$file")
-    local rel_path=${file_dir#src/}
+    local basename=$(basename "$file")
+    local tmp_file="$TMP_DIR/$basename"
     
-    # Calculate the number of directories to go up for proper path resolution
-    local dir_depth=0
-    if [ "$rel_path" != "." ]; then
-        dir_depth=$(echo "$rel_path" | tr -cd '/' | wc -c)
-        dir_depth=$((dir_depth + 1))
-    fi
+    echo "Processing $file"
     
-    echo "Processing $file (depth: $dir_depth, rel_path: $rel_path)"
+    # Create a simple script to process the file line by line
+    cat > "$TMP_DIR/convert.awk" << 'EOF'
+    {
+        # Check if line contains import with relative path
+        if ($0 ~ /import.*from[[:space:]]*["\']\.\//) {
+            # Replace ./ with @/
+            gsub(/from[[:space:]]*["\']\.\//,"from \"@\/");
+            # Fix quote consistency
+            gsub(/\"\'/, "\"\"");
+            gsub(/\'\"/, "\'\'")
+        }
+        # Check for ../ imports (parent directory)
+        else if ($0 ~ /import.*from[[:space:]]*["\']\.\.\// ) {
+            # Replace ../ with @/
+            gsub(/from[[:space:]]*["\']\.\.\//, "from \"@\/");
+            # Fix quote consistency
+            gsub(/\"\'/, "\"\"");
+            gsub(/\'\"/, "\'\'")
+        }
+        # Print the line (modified or not)
+        print;
+    }
+EOF
     
-    # Replace './' imports with '@/'
-    sed -i 's/from \"\.\/\(.*\)\"/from \"@\/\1\"/g' "$file"
-    sed -i "s/from '\.\/'\(.*\)'/from '@\/\1'/g" "$file"
+    # Process the file with awk
+    awk -f "$TMP_DIR/convert.awk" "$file" > "$tmp_file"
     
-    # Handle '../' imports - need to calculate the correct path
-    # For each level of '../', we need to go up one directory from the current file's location
-    local i=1
-    while [ $i -le $dir_depth ]; do
-        # Create pattern to match exactly i '../' sequences
-        local dots=""
-        local j=0
-        while [ $j -lt $i ]; do
-            dots="$dots\.\.\/"
-            j=$((j + 1))
-        done
-        
-        # Extract the directory components from rel_path
-        local components=(${rel_path//\// })
-        local target_dir=""
-        local k=0
-        while [ $k -lt $((${#components[@]} - $i)) ] && [ $k -lt ${#components[@]} ]; do
-            if [ -n "${components[$k]}" ]; then
-                target_dir="$target_dir/${components[$k]}"
-            fi
-            k=$((k + 1))
-        done
-        
-        # If we're going up beyond src, just use @/
-        if [ $i -gt ${#components[@]} ]; then
-            sed -i "s/from \"$dots\(.*\)\"/from \"@\/\1\"/g" "$file"
-            sed -i "s/from '$dots'\(.*\)'/from '@\/\1'/g" "$file"
-        else
-            # Otherwise, calculate the correct path
-            sed -i "s/from \"$dots\(.*\)\"/from \"@\/\1\"/g" "$file"
-            sed -i "s/from '$dots'\(.*\)'/from '@\/\1'/g" "$file"
-        fi
-        
-        i=$((i + 1))
-    done
+    # Replace the original file with the processed one
+    cat "$tmp_file" > "$file"
+    
+    echo "✓ Updated imports in $file"
 }
 
-# Recursively find and process all TypeScript files
-find_and_update_ts_files() {
-    local dir=$1
-    
-    # Process all TypeScript files in the current directory
-    for file in "$dir"/*.ts; do
-        if [ -f "$file" ]; then
-            update_imports "$file"
-        fi
-    done
-    
-    # Recursively process subdirectories
-    for subdir in "$dir"/*/; do
-        if [ -d "$subdir" ]; then
-            find_and_update_ts_files "$subdir"
-        fi
-    done
-}
-
-# Start the recursive processing from the src directory
+# Find all TypeScript files and update imports
 if [ -d "src" ]; then
-    find_and_update_ts_files "src"
+    echo "Finding all TypeScript files..."
+    find src -type f -name "*.ts" | while read -r file; do
+        convert_imports "$file"
+    done
     echo "Updated import paths in all TypeScript files to use @/ alias"
 else
     echo "Warning: src directory not found, skipping import path updates"
 fi
+
+# Clean up temporary directory
+rm -rf "$TMP_DIR"
 
 ### ========================================================================== ###
 ###                                  TEST                                      ###
