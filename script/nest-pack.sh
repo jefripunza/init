@@ -52,7 +52,7 @@ if [ -z "$1" ]; then
     exit 1
 fi
 project_name=$1
-nest new $project_name --package-manager bun
+nest new $project_name --package-manager yarn
 
 ### ========================================================================== ###
 ###                               INSTALLATION                                 ###
@@ -298,7 +298,7 @@ if (!content.includes('TypeOrmModule')) {
     // Add TypeOrmModule import after the last import
     content = content.replace(
       lastImport[0],
-      `${lastImport[0]}\nimport { TypeOrmModule } from '@nestjs/typeorm';\nimport { User } from '@/user/user.entity';`
+      `${lastImport[0]}\nimport { TypeOrmModule } from '@nestjs/typeorm';\nimport { User } from './user.entity';`
     );
   }
 }
