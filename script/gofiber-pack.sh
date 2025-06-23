@@ -3702,35 +3702,80 @@ var (
 )
 EOL
 
-# create server/variable/example.variable.go
-generate "./server/variable/example.variable.go" << 'EOL'
-
-EOL
-
 # create server/variable/database.variable.go
-generate "./server/variable/database.variable.go" << 'EOL'
+generate "./server/variable/database.variable.go" << EOL
 package variable
 
 const (
-	NotificationDatabase string = "saasduid_notification"
-	ContentDatabase      string = "saasduid_content"
-	AuthDatabase         string = "saasduid_auth"
-	UserDatabase         string = "saasduid_user"
-	TransactionDatabase  string = "saasduid_transaction"
-	ContestDatabase      string = "saasduid_contest"
-	WarehouseDatabase    string = "saasduid_warehouse"
+	NotificationDatabase string = "${project_name}_notification"
+	ContentDatabase      string = "${project_name}_content"
+	AuthDatabase         string = "${project_name}_auth"
+	UserDatabase         string = "${project_name}_user"
+	TransactionDatabase  string = "${project_name}_transaction"
+	ContestDatabase      string = "${project_name}_contest"
+	WarehouseDatabase    string = "${project_name}_warehouse"
 )
 EOL
 
+# create server/variable/jwt.variable.go
+generate "./server/variable/jwt.variable.go" << 'EOL'
+package variable
+
+var KeyExpiredLoginJwt = "expired_login"
+var KeyMaxLoginJwt = "max_login"
+EOL
+
+# create server/variable/role.variable.go
+generate "./server/variable/role.variable.go" << 'EOL'
+package variable
+
+const (
+	AdministratorRole string = "administrator"
+	UserRole          string = "user"
+)
+EOL
+
+# create server/variable/status.variable.go
+generate "./server/variable/status.variable.go" << 'EOL'
+package variable
+
+const (
+	PaymentPendingStatus  string = "pending"
+	PaymentPaidStatus     string = "paid"
+	PaymentRejectedStatus string = "rejected"
+)
+EOL
+
+
+
+
+
+# >> Server
+
+# create server/run.go
+generate "./server/run.go" << 'EOL'
+package server
+
+import (
+	"embed"
+
+	"golang-init/server/http"
+)
+
+func Run(embeddedFiles embed.FS) {
+	go func() {
+		http.Server(embeddedFiles)
+	}()
+}
+EOL
+
 ### ========================================================================== ###
-###                                  TEST                                      ###
+###                                  Setup                                     ###
 ### ========================================================================== ###
 
-echo "Testing..."
+echo "Setup..."
 
-yarn build
-yarn test
-yarn test:e2e
+go mod tidy
 
 ### ========================================================================== ###
 
