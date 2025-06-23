@@ -3508,7 +3508,7 @@ func NumberOnly(value interface{}) (int, error) {
 
 func IsPhoneNumber(phoneNumber string) bool {
 	// Pola regex untuk validasi nomor telepon internasional
-	regex := \'\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d|2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\d{1,14}$\'
+	regex := \`\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d|2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\d{1,14}$\`
 
 	// Membuat objek regex
 	re := regexp.MustCompile(regex)
@@ -3519,7 +3519,7 @@ func IsPhoneNumber(phoneNumber string) bool {
 
 func IsEmail(email string) bool {
 	// Membuat objek regex untuk validasi email
-	re := regexp.MustCompile(\'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$\')
+	re := regexp.MustCompile(\`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$\`)
 
 	// Mengecek apakah email sesuai dengan pola regex
 	return re.MatchString(email)
@@ -3527,7 +3527,7 @@ func IsEmail(email string) bool {
 
 func IsPassword(password string) bool {
 	// Membuat objek regex untuk validasi password
-	re := regexp.MustCompile(\'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$\')
+	re := regexp.MustCompile(\`^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$\`)
 
 	// Mengecek apakah password sesuai dengan pola regex
 	return re.MatchString(password)
