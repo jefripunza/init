@@ -1366,13 +1366,13 @@ import (
 )
 
 type Device struct {
-	ID            *primitive.ObjectID \'bson:"_id,omitempty" json:"_id,omitempty"\'
-	FingerprintID string              \'bson:"fingerprint_id" json:"fingerprint_id"\'
-	UserAgent     string              \'bson:"user_agent" json:"user_agent"\'
-	Emails        []string            \'bson:"emails" json:"emails"\'
+	ID            *primitive.ObjectID \`bson:"_id,omitempty" json:"_id,omitempty"\`
+	FingerprintID string              \`bson:"fingerprint_id" json:"fingerprint_id"\`
+	UserAgent     string              \`bson:"user_agent" json:"user_agent"\`
+	Emails        []string            \`bson:"emails" json:"emails"\`
 
-	IsBlocked bool               \'bson:"is_blocked" json:"is_blocked"\'
-	CreatedAt primitive.DateTime \'bson:"created_at" json:"created_at"\'
+	IsBlocked bool               \`bson:"is_blocked" json:"is_blocked"\`
+	CreatedAt primitive.DateTime \`bson:"created_at" json:"created_at"\`
 }
 
 func DeviceMigrate(ctx context.Context, client *mongo.Client) {
@@ -3527,7 +3527,7 @@ func IsEmail(email string) bool {
 
 func IsPassword(password string) bool {
 	// Membuat objek regex untuk validasi password
-	re := regexp.MustCompile(\`^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$\`)
+	re := regexp.MustCompile(\`^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@\$!%*?&])[A-Za-z\d@\$!%*?&]{8,}$\`)
 
 	// Mengecek apakah password sesuai dengan pola regex
 	return re.MatchString(password)
