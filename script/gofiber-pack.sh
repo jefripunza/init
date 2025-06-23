@@ -89,7 +89,7 @@ generate() {
 ## >> Root
 
 # create .env.example
-generate "./.env.example" << 'EOL'
+generate "./.env.example" << EOL
 # Server
 ENVIRONMENT=
 SERVER_NAME=
@@ -110,7 +110,7 @@ SAWANG_KEUANGAN_X_API_KEY=
 EOL
 
 # create Dockerfile
-generate "./Dockerfile" << 'EOL'
+generate "./Dockerfile" << EOL
 # Stage 1: 🛠️ Build ReactJS app using Bun.js
 FROM oven/bun:latest AS fe-builder
 LABEL org.opencontainers.image.authors="jefriherditriyanto@gmail.com"
@@ -201,7 +201,7 @@ CMD ["run"]
 EOL
 
 # create main.go
-generate "./main.go" << 'EOL'
+generate "./main.go" << EOL
 package main
 
 import (
@@ -212,10 +212,10 @@ import (
 	"syscall"
 	"time"
 
-	"golang-init/server"
-	"golang-init/server/auth"
-	"golang-init/server/connection"
-	"golang-init/server/util"
+	"${project_name}/server"
+	"${project_name}/server/auth"
+	"${project_name}/server/connection"
+	"${project_name}/server/util"
 )
 
 //go:embed dist/*
@@ -264,7 +264,7 @@ EOL
 # >> Server (Auth)
 
 # create server/auth/goth.auth.go
-generate "./server/auth/goth.auth.go" << 'EOL'
+generate "./server/auth/goth.auth.go" << EOL
 package auth
 
 import (
@@ -272,7 +272,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"golang-init/server/env"
+	"${project_name}/server/env"
 	"io"
 
 	"github.com/gofiber/fiber/v2"
@@ -444,7 +444,7 @@ EOL
 # >> Server (Connection)
 
 # create server/connection/mongodb.connection.go
-generate "./src/config/config.module.ts" << 'EOL'
+generate "./src/config/config.module.ts" << EOL
 package connection
 
 import (
@@ -452,7 +452,7 @@ import (
 	"fmt"
 	"log"
 
-	"golang-init/server/env"
+	"${project_name}/server/env"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -524,7 +524,7 @@ EOL
 ## >> Server (DTO)
 
 # create server/dto/auth.dto.go
-generate "./server/dto/auth.dto.go" << 'EOL'
+generate "./server/dto/auth.dto.go" << EOL
 package dto
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
@@ -555,7 +555,7 @@ type AuthTokenValidation struct {
 EOL
 
 # create server/dto/callback.dto.go
-generate "./server/dto/callback.dto.go" << 'EOL'
+generate "./server/dto/callback.dto.go" << EOL
 package dto
 
 type CallbackUpdateCustomer struct {
@@ -573,7 +573,7 @@ type CallbackUpdateBody struct {
 EOL
 
 # create server/dto/topup.dto.go
-generate "./server/dto/topup.dto.go" << 'EOL'
+generate "./server/dto/topup.dto.go" << EOL
 package dto
 
 type TopupCreateBody struct {
@@ -582,7 +582,7 @@ type TopupCreateBody struct {
 EOL
 
 # create server/dto/transaction.dto.go
-generate "./server/dto/transaction.dto.go" << 'EOL'
+generate "./server/dto/transaction.dto.go" << EOL
 package dto
 
 type TransactionActionBody struct {
@@ -593,7 +593,7 @@ type TransactionActionBody struct {
 EOL
 
 # create server/dto/user.dto.go
-generate "./server/dto/user.dto.go" << 'EOL'
+generate "./server/dto/user.dto.go" << EOL
 package dto
 
 type UserEditBody struct {
@@ -616,10 +616,10 @@ EOL
 # >> Server (Enigma)
 
 # create server/enigma/general.enigma.go
-generate "./server/enigma/general.enigma.go" << 'EOL'
+generate "./server/enigma/general.enigma.go" << EOL
 package enigma
 
-import "golang-init/server/util"
+import "${project_name}/server/util"
 
 func General(key string) []util.EnigmaSchema {
 	return []util.EnigmaSchema{
@@ -647,10 +647,10 @@ func General(key string) []util.EnigmaSchema {
 EOL
 
 # create server/enigma/user_password.enigma.go
-generate "./server/enigma/user_password.enigma.go" << 'EOL'
+generate "./server/enigma/user_password.enigma.go" << EOL
 package enigma
 
-import "golang-init/server/util"
+import "${project_name}/server/util"
 
 func UserPassword(key string) []util.EnigmaSchema {
 	return []util.EnigmaSchema{
@@ -687,7 +687,7 @@ EOL
 # >> Server (Env)
 
 # create server/env/google.env.go
-generate "./server/env/google.env.go" << 'EOL'
+generate "./server/env/google.env.go" << EOL
 package env
 
 import "os"
@@ -710,7 +710,7 @@ func GetGoogleClientSecret() string {
 EOL
 
 # create server/env/mongodb.env.go
-generate "./server/env/mongodb.env.go" << 'EOL'
+generate "./server/env/mongodb.env.go" << EOL
 package env
 
 import "os"
@@ -725,7 +725,7 @@ func GetMongoUrl() string {
 EOL
 
 # create server/env/sawang.env.go
-generate "./server/env/sawang.env.go" << 'EOL'
+generate "./server/env/sawang.env.go" << EOL
 package env
 
 import "os"
@@ -756,7 +756,7 @@ func GetSawangKeuanganXApiKey() string {
 EOL
 
 # create server/env/server.env.go
-generate "./server/env/server.env.go" << 'EOL'
+generate "./server/env/server.env.go" << EOL
 package env
 
 import (
@@ -805,7 +805,7 @@ func GetServerFrontendHostname() string {
 EOL
 
 # create server/env/system.env.go
-generate "./server/env/system.env.go" << 'EOL'
+generate "./server/env/system.env.go" << EOL
 package env
 
 import (
@@ -905,11 +905,11 @@ EOL
 # >> Server (HTTP)
 
 # create server/http/module.http.go
-generate "./server/http/module.http.go" << 'EOL'
+generate "./server/http/module.http.go" << EOL
 package http
 
 import (
-	"golang-init/server/module"
+	"${project_name}/server/module"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -950,7 +950,7 @@ func Module(app *fiber.App) {
 EOL
 
 # create server/http/server.http.go
-generate "./server/http/server.http.go" << 'EOL'
+generate "./server/http/server.http.go" << EOL
 package http
 
 import (
@@ -963,8 +963,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"golang-init/server/env"
-	"golang-init/server/middleware"
+	"${project_name}/server/env"
+	"${project_name}/server/middleware"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -1087,12 +1087,12 @@ EOL
 # >> Server (Middleware)
 
 # create server/middleware/error_handle.middleware.go
-generate "./server/middleware/error_handle.middleware.go" << 'EOL'
+generate "./server/middleware/error_handle.middleware.go" << EOL
 package middleware
 
 import (
 	"fmt"
-	"golang-init/server/env"
+	"${project_name}/server/env"
 	"runtime/debug"
 	"strings"
 
@@ -1151,7 +1151,7 @@ func ErrorHandler() fiber.Handler {
 EOL
 
 # create server/middleware/role_access.middleware.go
-generate "./server/middleware/role_access.middleware.go" << 'EOL'
+generate "./server/middleware/role_access.middleware.go" << EOL
 package middleware
 
 import (
@@ -1184,14 +1184,14 @@ func RoleAccess(allowedRoles []string) fiber.Handler {
 EOL
 
 # create server/middleware/use_token.middleware.go
-generate "./server/middleware/use_token.middleware.go" << 'EOL'
+generate "./server/middleware/use_token.middleware.go" << EOL
 package middleware
 
 import (
 	"fmt"
-	"golang-init/server/connection"
-	"golang-init/server/model"
-	"golang-init/server/util"
+	"${project_name}/server/connection"
+	"${project_name}/server/model"
+	"${project_name}/server/util"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -1273,13 +1273,13 @@ EOL
 # >> Server (Model)
 
 # create server/model/dashboard.model.go
-generate "./server/model/dashboard.model.go" << 'EOL'
+generate "./server/model/dashboard.model.go" << EOL
 package model
 
 import (
 	"context"
-	"golang-init/server/connection"
-	"golang-init/server/variable"
+	"${project_name}/server/connection"
+	"${project_name}/server/variable"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -1351,13 +1351,13 @@ func DashboardMigrate(ctx context.Context, client *mongo.Client) {
 EOL
 
 # create server/model/device.model.go
-generate "./server/model/device.model.go" << 'EOL'
+generate "./server/model/device.model.go" << EOL
 package model
 
 import (
 	"context"
-	"golang-init/server/connection"
-	"golang-init/server/variable"
+	"${project_name}/server/connection"
+	"${project_name}/server/variable"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -1442,12 +1442,12 @@ func DeviceInsertIfNotExist(ctx context.Context, client *mongo.Client, email str
 EOL
 
 # create server/model/login_history.model.go
-generate "./server/model/login_history.model.go" << 'EOL'
+generate "./server/model/login_history.model.go" << EOL
 package model
 
 import (
 	"context"
-	"golang-init/server/variable"
+	"${project_name}/server/variable"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
@@ -1505,13 +1505,13 @@ func LoginHistoryAll(ctx context.Context, client *mongo.Client, email string) ([
 EOL
 
 # create server/model/notification.model.go
-generate "./server/model/notification.model.go" << 'EOL'
+generate "./server/model/notification.model.go" << EOL
 package model
 
 import (
 	"context"
-	"golang-init/server/connection"
-	"golang-init/server/variable"
+	"${project_name}/server/connection"
+	"${project_name}/server/variable"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -1549,13 +1549,13 @@ func NotificationMigrate(ctx context.Context, client *mongo.Client) {
 EOL
 
 # create server/model/revoke.model.go
-generate "./server/model/revoke.model.go" << 'EOL'
+generate "./server/model/revoke.model.go" << EOL
 package model
 
 import (
 	"context"
-	"golang-init/server/connection"
-	"golang-init/server/variable"
+	"${project_name}/server/connection"
+	"${project_name}/server/variable"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -1661,13 +1661,13 @@ func RevokeDelete(ctx context.Context, client *mongo.Client, email string, jti s
 EOL
 
 # create server/model/transaction.model.go
-generate "./server/model/transaction.model.go" << 'EOL'
+generate "./server/model/transaction.model.go" << EOL
 package model
 
 import (
 	"context"
-	"golang-init/server/connection"
-	"golang-init/server/variable"
+	"${project_name}/server/connection"
+	"${project_name}/server/variable"
 	"strings"
 	"time"
 
@@ -1782,13 +1782,13 @@ func TransactionUpdateStatus(ctx context.Context, client *mongo.Client, code str
 EOL
 
 # create server/model/user.model.go
-generate "./server/model/user.model.go" << 'EOL'
+generate "./server/model/user.model.go" << EOL
 package model
 
 import (
 	"context"
-	"golang-init/server/connection"
-	"golang-init/server/variable"
+	"${project_name}/server/connection"
+	"${project_name}/server/variable"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -1943,17 +1943,17 @@ EOL
 # >> Server (Module)
 
 # create server/module/auth.module.go
-generate "./server/module/auth.module.go" << 'EOL'
+generate "./server/module/auth.module.go" << EOL
 package module
 
 import (
 	"fmt"
-	"golang-init/server/auth"
-	"golang-init/server/connection"
-	"golang-init/server/middleware"
-	"golang-init/server/model"
-	"golang-init/server/util"
-	"golang-init/server/variable"
+	"${project_name}/server/auth"
+	"${project_name}/server/connection"
+	"${project_name}/server/middleware"
+	"${project_name}/server/model"
+	"${project_name}/server/util"
+	"${project_name}/server/variable"
 	"log"
 	"time"
 
@@ -2187,14 +2187,14 @@ func (handler AuthHandler) LoginHistory(c *fiber.Ctx) error {
 EOL
 
 # create server/module/callback.module.go
-generate "./server/module/callback.module.go" << 'EOL'
+generate "./server/module/callback.module.go" << EOL
 package module
 
 import (
 	"fmt"
-	"golang-init/server/connection"
-	"golang-init/server/dto"
-	"golang-init/server/model"
+	"${project_name}/server/connection"
+	"${project_name}/server/dto"
+	"${project_name}/server/model"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -2254,7 +2254,7 @@ func (handler CallbackHandler) Update(c *fiber.Ctx) error {
 EOL
 
 # create server/module/content.module.go
-generate "./server/module/content.module.go" << 'EOL'
+generate "./server/module/content.module.go" << EOL
 package module
 
 import (
@@ -2301,12 +2301,12 @@ func (handler ContentHandler) Getter(c *fiber.Ctx) error {
 EOL
 
 # create server/module/example.module.go
-generate "./server/module/example.module.go" << 'EOL'
+generate "./server/module/example.module.go" << EOL
 package module
 
 import (
-	"golang-init/server/enigma"
-	"golang-init/server/util"
+	"${project_name}/server/enigma"
+	"${project_name}/server/util"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -2373,18 +2373,18 @@ func (handler ExampleHandler) Encode(c *fiber.Ctx) error {
 EOL
 
 # create server/module/topup.module.go
-generate "./server/module/topup.module.go" << 'EOL'
+generate "./server/module/topup.module.go" << EOL
 package module
 
 import (
 	"fmt"
-	"golang-init/server/connection"
-	"golang-init/server/dto"
-	"golang-init/server/middleware"
-	"golang-init/server/model"
-	"golang-init/server/service"
-	"golang-init/server/util"
-	"golang-init/server/variable"
+	"${project_name}/server/connection"
+	"${project_name}/server/dto"
+	"${project_name}/server/middleware"
+	"${project_name}/server/model"
+	"${project_name}/server/service"
+	"${project_name}/server/util"
+	"${project_name}/server/variable"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
@@ -2480,16 +2480,16 @@ func (handler TopupHandler) Create(c *fiber.Ctx) error {
 EOL
 
 # create server/module/transaction.module.go
-generate "./server/module/transaction.module.go" << 'EOL'
+generate "./server/module/transaction.module.go" << EOL
 package module
 
 import (
 	"fmt"
-	"golang-init/server/connection"
-	"golang-init/server/middleware"
-	"golang-init/server/model"
-	"golang-init/server/util"
-	"golang-init/server/variable"
+	"${project_name}/server/connection"
+	"${project_name}/server/middleware"
+	"${project_name}/server/model"
+	"${project_name}/server/util"
+	"${project_name}/server/variable"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
@@ -2547,16 +2547,16 @@ func (handler TransactionHandler) List(c *fiber.Ctx) error {
 EOL
 
 # create server/module/user.module.go
-generate "./server/module/user.module.go" << 'EOL'
+generate "./server/module/user.module.go" << EOL
 package module
 
 import (
 	"fmt"
-	"golang-init/server/connection"
-	"golang-init/server/dto"
-	"golang-init/server/middleware"
-	"golang-init/server/model"
-	"golang-init/server/util"
+	"${project_name}/server/connection"
+	"${project_name}/server/dto"
+	"${project_name}/server/middleware"
+	"${project_name}/server/model"
+	"${project_name}/server/util"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
@@ -2634,14 +2634,14 @@ EOL
 # >> Server (Service)
 
 # create server/service/sawang.service.go
-generate "./server/service/sawang.service.go" << 'EOL'
+generate "./server/service/sawang.service.go" << EOL
 package service
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"golang-init/server/env"
+	"${project_name}/server/env"
 	"io/ioutil"
 	"net/http"
 )
@@ -2725,7 +2725,7 @@ EOL
 # >> Server (Util)
 
 # create server/util/encryption.util.go
-generate "./server/util/encryption.util.go" << 'EOL'
+generate "./server/util/encryption.util.go" << EOL
 package util
 
 import (
@@ -2994,7 +2994,7 @@ func (ref Encryption) Decode(enigmaSchema []EnigmaSchema, encrypted string) (str
 EOL
 
 # create server/util/env.util.go
-generate "./server/util/env.util.go" << 'EOL'
+generate "./server/util/env.util.go" << EOL
 package util
 
 import (
@@ -3003,7 +3003,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"golang-init/server/env"
+	"${project_name}/server/env"
 
 	"github.com/joho/godotenv"
 )
@@ -3033,7 +3033,7 @@ func (ref Env) SetTimezone() error {
 EOL
 
 # create server/util/error.util.go
-generate "./server/util/error.util.go" << 'EOL'
+generate "./server/util/error.util.go" << EOL
 package util
 
 import (
@@ -3055,7 +3055,7 @@ func ErrorHandling(c *fiber.Ctx, err error) error {
 EOL
 
 # create server/util/fiber.util.go
-generate "./server/util/fiber.util.go" << 'EOL'
+generate "./server/util/fiber.util.go" << EOL
 package util
 
 import (
@@ -3102,7 +3102,7 @@ func GetFile(uploadPath string, filename string) (string, error) {
 EOL
 
 # create server/util/format.util.go
-generate "./server/util/format.util.go" << 'EOL'
+generate "./server/util/format.util.go" << EOL
 package util
 
 import "strconv"
@@ -3113,7 +3113,7 @@ func ParseFloat64(value string) (float64, error) {
 EOL
 
 # create server/util/generate.model.go
-generate "./server/util/generate.model.go" << 'EOL'
+generate "./server/util/generate.model.go" << EOL
 package util
 
 import (
@@ -3139,11 +3139,11 @@ func (ref Generate) UUIDv4() string {
 EOL
 
 # create server/util/jwt.util.go
-generate "./server/util/jwt.util.go" << 'EOL'
+generate "./server/util/jwt.util.go" << EOL
 package util
 
 import (
-	"golang-init/server/env"
+	"${project_name}/server/env"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -3200,7 +3200,7 @@ func (ref JWT) Validate(tokenString string) (jwt.MapClaims, error) {
 EOL
 
 # create server/util/mongodb.util.go
-generate "./server/util/mongodb.util.go" << 'EOL'
+generate "./server/util/mongodb.util.go" << EOL
 package util
 
 import (
@@ -3271,7 +3271,7 @@ func PaginateMongo(model interface{}, collection *mongo.Collection, c *fiber.Ctx
 EOL
 
 # create server/util/pagination.util.go
-generate "./server/util/pagination.util.go" << 'EOL'
+generate "./server/util/pagination.util.go" << EOL
 package util
 
 import (
@@ -3355,7 +3355,7 @@ func PaginationGetTotalPages(ctx context.Context, collection *mongo.Collection, 
 EOL
 
 # create server/util/rest.util.go
-generate "./server/util/rest.util.go" << 'EOL'
+generate "./server/util/rest.util.go" << EOL
 package util
 
 import (
@@ -3476,7 +3476,7 @@ func RestHit[T any](options RestOptions) (*T, RestResponseError) {
 EOL
 
 # create server/util/validate.util.go
-generate "./server/util/validate.util.go" << 'EOL'
+generate "./server/util/validate.util.go" << EOL
 package util
 
 import (
@@ -3617,7 +3617,7 @@ func IsAudioFile(contentType string) bool {
 EOL
 
 # create server/util/validator.util.go
-generate "./server/util/validator.util.go" << 'EOL'
+generate "./server/util/validator.util.go" << EOL
 package util
 
 import (
@@ -3676,7 +3676,7 @@ EOL
 # >> Server (Variable)
 
 # create server/variable/collection.variable.go
-generate "./server/variable/collection.variable.go" << 'EOL'
+generate "./server/variable/collection.variable.go" << EOL
 package variable
 
 var (
@@ -3718,7 +3718,7 @@ const (
 EOL
 
 # create server/variable/jwt.variable.go
-generate "./server/variable/jwt.variable.go" << 'EOL'
+generate "./server/variable/jwt.variable.go" << EOL
 package variable
 
 var KeyExpiredLoginJwt = "expired_login"
@@ -3726,7 +3726,7 @@ var KeyMaxLoginJwt = "max_login"
 EOL
 
 # create server/variable/role.variable.go
-generate "./server/variable/role.variable.go" << 'EOL'
+generate "./server/variable/role.variable.go" << EOL
 package variable
 
 const (
@@ -3736,7 +3736,7 @@ const (
 EOL
 
 # create server/variable/status.variable.go
-generate "./server/variable/status.variable.go" << 'EOL'
+generate "./server/variable/status.variable.go" << EOL
 package variable
 
 const (
@@ -3753,13 +3753,13 @@ EOL
 # >> Server
 
 # create server/run.go
-generate "./server/run.go" << 'EOL'
+generate "./server/run.go" << EOL
 package server
 
 import (
 	"embed"
 
-	"golang-init/server/http"
+	"${project_name}/server/http"
 )
 
 func Run(embeddedFiles embed.FS) {
@@ -3780,4 +3780,3 @@ go mod tidy
 ### ========================================================================== ###
 
 echo "Done!"
-popd
