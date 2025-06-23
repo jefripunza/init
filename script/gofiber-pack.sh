@@ -444,7 +444,7 @@ EOL
 # >> Server (Connection)
 
 # create server/connection/mongodb.connection.go
-generate "./src/config/config.module.ts" << EOL
+generate "./server/connection/mongodb.connection.go" << EOL
 package connection
 
 import (
