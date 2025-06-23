@@ -564,6 +564,7 @@ type CallbackUpdateCustomer struct {
 }
 type CallbackUpdateBody struct {
 	TrxID         string                 \`json:"trx_id"\`
+	Amount        int                    \`json:"amount"\`
 	Customer      CallbackUpdateCustomer \`json:"customer"\`
 	PaymentAt     string                 \`json:"payment_at"\`
 	PaymentMethod string                 \`json:"payment_method"\`
