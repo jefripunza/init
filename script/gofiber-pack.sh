@@ -371,7 +371,7 @@ func (ref Goth) CompleteUserAuth(ctx *fiber.Ctx) (goth.User, error) {
 		return goth.User{}, errors.New("no code in request")
 	}
 
-	// Ambil sesi dari `code` (tanpa UnmarshalSession)
+	// Ambil sesi dari \'code\' (tanpa UnmarshalSession)
 	sess, err := provider.BeginAuth(state)
 	if err != nil {
 		return goth.User{}, fmt.Errorf("failed to start auth session: %w", err)
@@ -486,9 +486,9 @@ func (ref MongoDB) Connect() (*mongo.Client, context.Context, error) {
 }
 
 type MongoDbIndex struct {
-	Name   string `json:"name"`
-	Unique bool   `json:"unique"`
-	Keys   bson.M `json:"keys"`
+	Name   string \'json:"name"\'
+	Unique bool   \'json:"unique"\'
+	Keys   bson.M \'json:"keys"\'
 }
 
 func (ref MongoDB) CreateIndex(ctx context.Context, database *mongo.Database, collectionName string, listIndex []MongoDbIndex) error {
@@ -530,27 +530,27 @@ package dto
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type AuthEncryptBody struct {
-	Text string `json:"text"`
+	Text string \'json:"text"\'
 }
 type AuthDecryptBody struct {
-	EncryptedText string `json:"encrypted_text"`
+	EncryptedText string \'json:"encrypted_text"\'
 }
 
 type AuthTokenValidation struct {
-	ID       *primitive.ObjectID `bson:"_id,omitempty"     json:"_id,omitempty"`
-	Email    *string             `bson:"email,omitempty" json:"email,omitempty"`         // SSO
-	RoleCode *string             `bson:"role_code,omitempty" json:"role_code,omitempty"` // admin,
-	Balance  *int64              `bson:"balance,omitempty" json:"balance,omitempty"`     // default: 0
+	ID       *primitive.ObjectID \'bson:"_id,omitempty"     json:"_id,omitempty"\'
+	Email    *string             \'bson:"email,omitempty" json:"email,omitempty"\'         // SSO
+	RoleCode *string             \'bson:"role_code,omitempty" json:"role_code,omitempty"\' // admin,
+	Balance  *int64              \'bson:"balance,omitempty" json:"balance,omitempty"\'     // default: 0
 
 	// Info
-	Name      string  `bson:"name" json:"name"`
-	Address   string  `bson:"address" json:"address"`
+	Name      string  \'bson:"name" json:"name"\'
+	Address   string  \'bson:"address" json:"address"\'
 
-	Whatsapp      string  `bson:"whatsapp" json:"whatsapp"`
+	Whatsapp      string  \'bson:"whatsapp" json:"whatsapp"\'
 
 	// Settings
-	IsDarkMode *bool `bson:"is_dark_mode,omitempty" json:"is_dark_mode,omitempty"` // default: false
-	IsActive   *bool `bson:"is_active,omitempty" json:"is_active,omitempty"`       // default: true
+	IsDarkMode *bool \'bson:"is_dark_mode,omitempty" json:"is_dark_mode,omitempty"\' // default: false
+	IsActive   *bool \'bson:"is_active,omitempty" json:"is_active,omitempty"\'       // default: true
 }
 EOL
 
@@ -559,16 +559,16 @@ generate "./server/dto/callback.dto.go" << EOL
 package dto
 
 type CallbackUpdateCustomer struct {
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	Email string \'json:"email"\'
+	Name  string \'json:"name"\'
 }
 type CallbackUpdateBody struct {
-	TrxID         string                 `json:"trx_id"`
-	Amount        int                    `json:"amount"`
-	Customer      CallbackUpdateCustomer `json:"customer"`
-	PaymentAt     string                 `json:"payment_at"`
-	PaymentMethod string                 `json:"payment_method"`
-	Status        string                 `json:"status"`
+	TrxID         string                 \'json:"trx_id"\'
+	Amount        int                    \'json:"amount"\'
+	Customer      CallbackUpdateCustomer \'json:"customer"\'
+	PaymentAt     string                 \'json:"payment_at"\'
+	PaymentMethod string                 \'json:"payment_method"\'
+	Status        string                 \'json:"status"\'
 }
 EOL
 
@@ -577,7 +577,7 @@ generate "./server/dto/topup.dto.go" << EOL
 package dto
 
 type TopupCreateBody struct {
-	Amount int `json:"amount"`
+	Amount int \'json:"amount"\'
 }
 EOL
 
@@ -586,9 +586,9 @@ generate "./server/dto/transaction.dto.go" << EOL
 package dto
 
 type TransactionActionBody struct {
-	Status string `json:"status" validate:"required,oneof=approved rejected"`
-	Amount int64  `json:"amount"`
-	Note   string `json:"note,omitempty"`
+	Status string \'json:"status" validate:"required,oneof=approved rejected"\'
+	Amount int64  \'json:"amount"\'
+	Note   string \'json:"note,omitempty"\'
 }
 EOL
 
@@ -598,10 +598,10 @@ package dto
 
 type UserEditBody struct {
 	// Info
-	Name    string `json:"name" validate:"required,min=3"`
-	Address string `json:"address" validate:"required"`
+	Name    string \'json:"name" validate:"required,min=3"\'
+	Address string \'json:"address" validate:"required"\'
 
-	Whatsapp string `json:"whatsapp" validate:"required,e164"` // E.164 format
+	Whatsapp string \'json:"whatsapp" validate:"required,e164"\' // E.164 format
 }
 EOL
 
@@ -1287,21 +1287,21 @@ import (
 )
 
 type Dashboard struct {
-	ID     *primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
-	UserID *primitive.ObjectID `bson:"user_id,omitempty" json:"user_id,omitempty"`
+	ID     *primitive.ObjectID \'bson:"_id,omitempty" json:"_id,omitempty"\'
+	UserID *primitive.ObjectID \'bson:"user_id,omitempty" json:"user_id,omitempty"\'
 
 	// pointer
-	Year  *int `bson:"year,omitempty" json:"year,omitempty"`
-	Month *int `bson:"month,omitempty" json:"month,omitempty"`
-	Day   *int `bson:"day,omitempty" json:"day,omitempty"`
+	Year  *int \'bson:"year,omitempty" json:"year,omitempty"\'
+	Month *int \'bson:"month,omitempty" json:"month,omitempty"\'
+	Day   *int \'bson:"day,omitempty" json:"day,omitempty"\'
 
 	// value
-	BalanceAvailable *int `bson:"balance_available,omitempty" json:"balance_available,omitempty"`
-	TotalPayment     *int `bson:"total_payment,omitempty" json:"total_payment,omitempty"`
-	PendingPayment   *int `bson:"pending_payment,omitempty" json:"pending_payment,omitempty"`
+	BalanceAvailable *int \'bson:"balance_available,omitempty" json:"balance_available,omitempty"\'
+	TotalPayment     *int \'bson:"total_payment,omitempty" json:"total_payment,omitempty"\'
+	PendingPayment   *int \'bson:"pending_payment,omitempty" json:"pending_payment,omitempty"\'
 
 	// recap data
-	Transactions *[]Transaction `bson:"transactions,omitempty" json:"transactions,omitempty"`
+	Transactions *[]Transaction \'bson:"transactions,omitempty" json:"transactions,omitempty"\'
 }
 
 func DashboardMigrate(ctx context.Context, client *mongo.Client) {
@@ -1367,13 +1367,13 @@ import (
 )
 
 type Device struct {
-	ID            *primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
-	FingerprintID string              `bson:"fingerprint_id" json:"fingerprint_id"`
-	UserAgent     string              `bson:"user_agent" json:"user_agent"`
-	Emails        []string            `bson:"emails" json:"emails"`
+	ID            *primitive.ObjectID \'bson:"_id,omitempty" json:"_id,omitempty"\'
+	FingerprintID string              \'bson:"fingerprint_id" json:"fingerprint_id"\'
+	UserAgent     string              \'bson:"user_agent" json:"user_agent"\'
+	Emails        []string            \'bson:"emails" json:"emails"\'
 
-	IsBlocked bool               `bson:"is_blocked" json:"is_blocked"`
-	CreatedAt primitive.DateTime `bson:"created_at" json:"created_at"`
+	IsBlocked bool               \'bson:"is_blocked" json:"is_blocked"\'
+	CreatedAt primitive.DateTime \'bson:"created_at" json:"created_at"\'
 }
 
 func DeviceMigrate(ctx context.Context, client *mongo.Client) {
@@ -1457,17 +1457,17 @@ import (
 
 // -> main collection
 type LoginHistory struct {
-	ID    *primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Email *string             `json:"email,omitempty" bson:"email,omitempty"`
+	ID    *primitive.ObjectID \'json:"_id,omitempty" bson:"_id,omitempty"\'
+	Email *string             \'json:"email,omitempty" bson:"email,omitempty"\'
 
-	JwtID *string `json:"jti,omitempty" bson:"jti,omitempty"`
+	JwtID *string \'json:"jti,omitempty" bson:"jti,omitempty"\'
 
-	UserAgent *string `json:"user_agent,omitempty" bson:"user_agent,omitempty"`
-	IpAddress *string `json:"ip_address,omitempty" bson:"ip_address,omitempty"`
-	DeviceID  *string `json:"device_id,omitempty" bson:"device_id,omitempty"`
+	UserAgent *string \'json:"user_agent,omitempty" bson:"user_agent,omitempty"\'
+	IpAddress *string \'json:"ip_address,omitempty" bson:"ip_address,omitempty"\'
+	DeviceID  *string \'json:"device_id,omitempty" bson:"device_id,omitempty"\'
 
-	LoginAt   *primitive.DateTime `json:"login_at,omitempty" bson:"login_at,omitempty"`
-	ExpiredAt *primitive.DateTime `json:"expired_at,omitempty" bson:"expired_at,omitempty"`
+	LoginAt   *primitive.DateTime \'json:"login_at,omitempty" bson:"login_at,omitempty"\'
+	ExpiredAt *primitive.DateTime \'json:"expired_at,omitempty" bson:"expired_at,omitempty"\'
 }
 
 func LoginHistoryInsert(ctx context.Context, client *mongo.Client, loginHistory LoginHistory) error {
@@ -1520,18 +1520,18 @@ import (
 )
 
 type Notification struct {
-	ID     *primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
-	UserID *primitive.ObjectID `bson:"user_id,omitempty" json:"user_id,omitempty"`
+	ID     *primitive.ObjectID \'bson:"_id,omitempty" json:"_id,omitempty"\'
+	UserID *primitive.ObjectID \'bson:"user_id,omitempty" json:"user_id,omitempty"\'
 
-	ContentLabel *string `bson:"content_label,omitempty" json:"content_label,omitempty"` // mini for list notification
-	ContentBody  *string `bson:"content_body,omitempty" json:"content_body,omitempty"`   // for body email (html)
+	ContentLabel *string \'bson:"content_label,omitempty" json:"content_label,omitempty"\' // mini for list notification
+	ContentBody  *string \'bson:"content_body,omitempty" json:"content_body,omitempty"\'   // for body email (html)
 
-	IsSended        *bool   `bson:"is_sended,omitempty" json:"is_sended,omitempty"`         // default: false
-	IsSendError     *bool   `bson:"is_send_error,omitempty" json:"is_send_error,omitempty"` // default: false
-	SendErrorReason *string `bson:"send_error_reason,omitempty" json:"send_error_reason,omitempty"`
+	IsSended        *bool   \'bson:"is_sended,omitempty" json:"is_sended,omitempty"\'         // default: false
+	IsSendError     *bool   \'bson:"is_send_error,omitempty" json:"is_send_error,omitempty"\' // default: false
+	SendErrorReason *string \'bson:"send_error_reason,omitempty" json:"send_error_reason,omitempty"\'
 
-	SendedAt  *time.Time `bson:"sended_at,omitempty" json:"sended_at,omitempty"`
-	CreatedAt *time.Time `bson:"created_at,omitempty" json:"created_at,omitempty"`
+	SendedAt  *time.Time \'bson:"sended_at,omitempty" json:"sended_at,omitempty"\'
+	CreatedAt *time.Time \'bson:"created_at,omitempty" json:"created_at,omitempty"\'
 }
 
 func NotificationMigrate(ctx context.Context, client *mongo.Client) {
@@ -1566,13 +1566,13 @@ import (
 
 // -> main collection
 type Revoke struct {
-	ID *primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ID *primitive.ObjectID \'json:"_id,omitempty" bson:"_id,omitempty"\'
 
-	Email *string `json:"email,omitempty"  bson:"email,omitempty"`
-	JwtID *string `json:"jti,omitempty"    bson:"jti,omitempty"`
+	Email *string \'json:"email,omitempty"  bson:"email,omitempty"\'
+	JwtID *string \'json:"jti,omitempty"    bson:"jti,omitempty"\'
 
-	ExpiredAt *primitive.DateTime `json:"expired_at,omitempty"  bson:"expired_at,omitempty"`
-	LoginAt   *primitive.DateTime `json:"login_at,omitempty"    bson:"login_at,omitempty"`
+	ExpiredAt *primitive.DateTime \'json:"expired_at,omitempty"  bson:"expired_at,omitempty"\'
+	LoginAt   *primitive.DateTime \'json:"login_at,omitempty"    bson:"login_at,omitempty"\'
 }
 
 func RevokeMigrate(ctx context.Context, client *mongo.Client) {
@@ -1679,19 +1679,19 @@ import (
 )
 
 type Transaction struct {
-	ID          *primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Email       *string             `json:"email,omitempty" bson:"email,omitempty"`
-	Code        *string             `json:"code,omitempty" bson:"code,omitempty"` // order_id
-	GrossAmount *int64              `json:"gross_amount,omitempty" bson:"gross_amount,omitempty"`
-	Note        *string             `json:"note,omitempty" bson:"note,omitempty"`
+	ID          *primitive.ObjectID \'json:"_id,omitempty" bson:"_id,omitempty"\'
+	Email       *string             \'json:"email,omitempty" bson:"email,omitempty"\'
+	Code        *string             \'json:"code,omitempty" bson:"code,omitempty"\' // order_id
+	GrossAmount *int64              \'json:"gross_amount,omitempty" bson:"gross_amount,omitempty"\'
+	Note        *string             \'json:"note,omitempty" bson:"note,omitempty"\'
 
 	// with payment gateway
-	SnapURL       *string `json:"snap_url,omitempty"    bson:"snap_url,omitempty"`
-	Status        *string `json:"status,omitempty"      bson:"status,omitempty"` // PENDING, PAID, CANCEL, REJECTED
-	PaymentMethod *string `json:"payment_method,omitempty"  bson:"payment_method,omitempty"`
+	SnapURL       *string \'json:"snap_url,omitempty"    bson:"snap_url,omitempty"\'
+	Status        *string \'json:"status,omitempty"      bson:"status,omitempty"\' // PENDING, PAID, CANCEL, REJECTED
+	PaymentMethod *string \'json:"payment_method,omitempty"  bson:"payment_method,omitempty"\'
 
-	CreatedAt *primitive.DateTime `json:"created_at,omitempty" bson:"created_at,omitempty"`
-	PaymentAt *primitive.DateTime `json:"payment_at,omitempty" bson:"payment_at,omitempty"`
+	CreatedAt *primitive.DateTime \'json:"created_at,omitempty" bson:"created_at,omitempty"\'
+	PaymentAt *primitive.DateTime \'json:"payment_at,omitempty" bson:"payment_at,omitempty"\'
 }
 
 func TransactionMigrate(ctx context.Context, client *mongo.Client) {
@@ -1798,26 +1798,26 @@ import (
 )
 
 type User struct {
-	ID       *primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
-	Email    *string             `bson:"email,omitempty" json:"email,omitempty"`         // SSO
-	RoleCode *string             `bson:"role_code,omitempty" json:"role_code,omitempty"` // admin,
-	Balance  *int64              `bson:"balance,omitempty" json:"balance,omitempty"`     // default: 0
+	ID       *primitive.ObjectID \'bson:"_id,omitempty" json:"_id,omitempty"\'
+	Email    *string             \'bson:"email,omitempty" json:"email,omitempty"\'         // SSO
+	RoleCode *string             \'bson:"role_code,omitempty" json:"role_code,omitempty"\' // admin,
+	Balance  *int64              \'bson:"balance,omitempty" json:"balance,omitempty"\'     // default: 0
 
 	// Info
-	Name    *string `bson:"name,omitempty" json:"name,omitempty"`
-	Address *string `bson:"address,omitempty" json:"address,omitempty"`
+	Name    *string \'bson:"name,omitempty" json:"name,omitempty"\'
+	Address *string \'bson:"address,omitempty" json:"address,omitempty"\'
 
-	Whatsapp *string `bson:"whatsapp,omitempty" json:"whatsapp,omitempty"`
+	Whatsapp *string \'bson:"whatsapp,omitempty" json:"whatsapp,omitempty"\'
 
 	// Settings
-	IsDarkMode *bool `bson:"is_dark_mode,omitempty" json:"is_dark_mode,omitempty"` // default: false
-	IsActive   *bool `bson:"is_active,omitempty" json:"is_active,omitempty"`       // default: true
+	IsDarkMode *bool \'bson:"is_dark_mode,omitempty" json:"is_dark_mode,omitempty"\' // default: false
+	IsActive   *bool \'bson:"is_active,omitempty" json:"is_active,omitempty"\'       // default: true
 
 	// timestamps (SLA)
-	CreatedAt *primitive.DateTime `json:"created_at,omitempty"  bson:"created_at,omitempty"`
-	UpdatedAt *primitive.DateTime `json:"updated_at,omitempty"  bson:"updated_at,omitempty"`
+	CreatedAt *primitive.DateTime \'json:"created_at,omitempty"  bson:"created_at,omitempty"\'
+	UpdatedAt *primitive.DateTime \'json:"updated_at,omitempty"  bson:"updated_at,omitempty"\'
 
-	UpdateHistory *[]User `bson:"update_history,omitempty" json:"update_history,omitempty"`
+	UpdateHistory *[]User \'bson:"update_history,omitempty" json:"update_history,omitempty"\'
 }
 
 func UserMigrate(ctx context.Context, client *mongo.Client) {
@@ -2648,26 +2648,26 @@ import (
 
 // Struct untuk item
 type SawangKeuanganItem struct {
-	Name     string `json:"name"`
-	Price    int    `json:"price"`
-	Qty      int    `json:"qty"`
-	Category string `json:"category"`
+	Name     string \'json:"name"\'
+	Price    int    \'json:"price"\'
+	Qty      int    \'json:"qty"\'
+	Category string \'json:"category"\'
 }
 
 // Struct untuk payload request
 type SawangKeuanganPaymentRequest struct {
-	CustomerName  string               `json:"customer_name"`
-	CustomerEmail string               `json:"customer_email"`
-	Items         []SawangKeuanganItem `json:"items"`
+	CustomerName  string               \'json:"customer_name"\'
+	CustomerEmail string               \'json:"customer_email"\'
+	Items         []SawangKeuanganItem \'json:"items"\'
 }
 
 type SawangKeuanganDataResponse struct {
-	SnapURL string `json:"snap_url"`
-	TrxID   string `json:"trx_id"`
+	SnapURL string \'json:"snap_url"\'
+	TrxID   string \'json:"trx_id"\'
 }
 type SawangKeuanganResponse struct {
-	Data    SawangKeuanganDataResponse `json:"data"`
-	Message string                     `json:"message"`
+	Data    SawangKeuanganDataResponse \'json:"data"\'
+	Message string                     \'json:"message"\'
 }
 
 func SawangKeuanganCreatePayment(payload SawangKeuanganPaymentRequest) (*SawangKeuanganDataResponse, error) {
@@ -3153,13 +3153,13 @@ import (
 type JWT struct{}
 
 type JwtClaims struct {
-	Email     string `json:"email"`
-	Name      string `json:"name"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	RoleCode  string `json:"role_code"`
-	Iat       int64  `json:"iat"`
-	Jti       string `json:"jti"`
+	Email     string \'json:"email"\'
+	Name      string \'json:"name"\'
+	FirstName string \'json:"first_name"\'
+	LastName  string \'json:"last_name"\'
+	RoleCode  string \'json:"role_code"\'
+	Iat       int64  \'json:"iat"\'
+	Jti       string \'json:"jti"\'
 }
 
 func (ref JWT) Generate(email string, name string, role_code string) (string, string, error) {
@@ -3375,13 +3375,13 @@ type RestOptions struct {
 }
 
 type RestResponseError struct {
-	StatusCode int    `json:"status_code"`
-	Message    string `json:"message"`
-	Response   string `json:"response"`
+	StatusCode int    \'json:"status_code"\'
+	Message    string \'json:"message"\'
+	Response   string \'json:"response"\'
 }
 
 type RestErrorMessage struct {
-	Message string `json:"message"`
+	Message string \'json:"message"\'
 }
 
 func ParseErrorResponse(response string) (*RestErrorMessage, error) {
@@ -3509,7 +3509,7 @@ func NumberOnly(value interface{}) (int, error) {
 
 func IsPhoneNumber(phoneNumber string) bool {
 	// Pola regex untuk validasi nomor telepon internasional
-	regex := `\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d|2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\d{1,14}$`
+	regex := \'\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d|2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\d{1,14}$\'
 
 	// Membuat objek regex
 	re := regexp.MustCompile(regex)
@@ -3520,7 +3520,7 @@ func IsPhoneNumber(phoneNumber string) bool {
 
 func IsEmail(email string) bool {
 	// Membuat objek regex untuk validasi email
-	re := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	re := regexp.MustCompile(\'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$\')
 
 	// Mengecek apakah email sesuai dengan pola regex
 	return re.MatchString(email)
@@ -3528,7 +3528,7 @@ func IsEmail(email string) bool {
 
 func IsPassword(password string) bool {
 	// Membuat objek regex untuk validasi password
-	re := regexp.MustCompile(`^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$`)
+	re := regexp.MustCompile(\'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$\')
 
 	// Mengecek apakah password sesuai dengan pola regex
 	return re.MatchString(password)
