@@ -371,7 +371,7 @@ func (ref Goth) CompleteUserAuth(ctx *fiber.Ctx) (goth.User, error) {
 		return goth.User{}, errors.New("no code in request")
 	}
 
-	// Ambil sesi dari \'code\' (tanpa UnmarshalSession)
+	// Ambil sesi dari 'code' (tanpa UnmarshalSession)
 	sess, err := provider.BeginAuth(state)
 	if err != nil {
 		return goth.User{}, fmt.Errorf("failed to start auth session: %w", err)
@@ -1456,17 +1456,17 @@ import (
 
 // -> main collection
 type LoginHistory struct {
-	ID    *primitive.ObjectID \'json:"_id,omitempty" bson:"_id,omitempty"\'
-	Email *string             \'json:"email,omitempty" bson:"email,omitempty"\'
+	ID    *primitive.ObjectID \`json:"_id,omitempty" bson:"_id,omitempty"\`
+	Email *string             \`json:"email,omitempty" bson:"email,omitempty"\`
 
-	JwtID *string \'json:"jti,omitempty" bson:"jti,omitempty"\'
+	JwtID *string \`json:"jti,omitempty" bson:"jti,omitempty"\`
 
-	UserAgent *string \'json:"user_agent,omitempty" bson:"user_agent,omitempty"\'
-	IpAddress *string \'json:"ip_address,omitempty" bson:"ip_address,omitempty"\'
-	DeviceID  *string \'json:"device_id,omitempty" bson:"device_id,omitempty"\'
+	UserAgent *string \`json:"user_agent,omitempty" bson:"user_agent,omitempty"\`
+	IpAddress *string \`json:"ip_address,omitempty" bson:"ip_address,omitempty"\`
+	DeviceID  *string \`json:"device_id,omitempty" bson:"device_id,omitempty"\`
 
-	LoginAt   *primitive.DateTime \'json:"login_at,omitempty" bson:"login_at,omitempty"\'
-	ExpiredAt *primitive.DateTime \'json:"expired_at,omitempty" bson:"expired_at,omitempty"\'
+	LoginAt   *primitive.DateTime \`json:"login_at,omitempty" bson:"login_at,omitempty"\`
+	ExpiredAt *primitive.DateTime \`json:"expired_at,omitempty" bson:"expired_at,omitempty"\`
 }
 
 func LoginHistoryInsert(ctx context.Context, client *mongo.Client, loginHistory LoginHistory) error {
@@ -1519,18 +1519,18 @@ import (
 )
 
 type Notification struct {
-	ID     *primitive.ObjectID \'bson:"_id,omitempty" json:"_id,omitempty"\'
-	UserID *primitive.ObjectID \'bson:"user_id,omitempty" json:"user_id,omitempty"\'
+	ID     *primitive.ObjectID \`bson:"_id,omitempty" json:"_id,omitempty"\`
+	UserID *primitive.ObjectID \`bson:"user_id,omitempty" json:"user_id,omitempty"\`
 
-	ContentLabel *string \'bson:"content_label,omitempty" json:"content_label,omitempty"\' // mini for list notification
-	ContentBody  *string \'bson:"content_body,omitempty" json:"content_body,omitempty"\'   // for body email (html)
+	ContentLabel *string \`bson:"content_label,omitempty" json:"content_label,omitempty"\` // mini for list notification
+	ContentBody  *string \`bson:"content_body,omitempty" json:"content_body,omitempty"\`   // for body email (html)
 
-	IsSended        *bool   \'bson:"is_sended,omitempty" json:"is_sended,omitempty"\'         // default: false
-	IsSendError     *bool   \'bson:"is_send_error,omitempty" json:"is_send_error,omitempty"\' // default: false
-	SendErrorReason *string \'bson:"send_error_reason,omitempty" json:"send_error_reason,omitempty"\'
+	IsSended        *bool   \`bson:"is_sended,omitempty" json:"is_sended,omitempty"\`         // default: false
+	IsSendError     *bool   \`bson:"is_send_error,omitempty" json:"is_send_error,omitempty"\` // default: false
+	SendErrorReason *string \`bson:"send_error_reason,omitempty" json:"send_error_reason,omitempty"\`
 
-	SendedAt  *time.Time \'bson:"sended_at,omitempty" json:"sended_at,omitempty"\'
-	CreatedAt *time.Time \'bson:"created_at,omitempty" json:"created_at,omitempty"\'
+	SendedAt  *time.Time \`bson:"sended_at,omitempty" json:"sended_at,omitempty"\`
+	CreatedAt *time.Time \`bson:"created_at,omitempty" json:"created_at,omitempty"\`
 }
 
 func NotificationMigrate(ctx context.Context, client *mongo.Client) {
@@ -1565,13 +1565,13 @@ import (
 
 // -> main collection
 type Revoke struct {
-	ID *primitive.ObjectID \'json:"_id,omitempty" bson:"_id,omitempty"\'
+	ID *primitive.ObjectID \`json:"_id,omitempty" bson:"_id,omitempty"\`
 
-	Email *string \'json:"email,omitempty"  bson:"email,omitempty"\'
-	JwtID *string \'json:"jti,omitempty"    bson:"jti,omitempty"\'
+	Email *string \`json:"email,omitempty"  bson:"email,omitempty"\`
+	JwtID *string \`json:"jti,omitempty"    bson:"jti,omitempty"\`
 
-	ExpiredAt *primitive.DateTime \'json:"expired_at,omitempty"  bson:"expired_at,omitempty"\'
-	LoginAt   *primitive.DateTime \'json:"login_at,omitempty"    bson:"login_at,omitempty"\'
+	ExpiredAt *primitive.DateTime \`json:"expired_at,omitempty"  bson:"expired_at,omitempty"\`
+	LoginAt   *primitive.DateTime \`json:"login_at,omitempty"    bson:"login_at,omitempty"\`
 }
 
 func RevokeMigrate(ctx context.Context, client *mongo.Client) {
@@ -1678,19 +1678,19 @@ import (
 )
 
 type Transaction struct {
-	ID          *primitive.ObjectID \'json:"_id,omitempty" bson:"_id,omitempty"\'
-	Email       *string             \'json:"email,omitempty" bson:"email,omitempty"\'
-	Code        *string             \'json:"code,omitempty" bson:"code,omitempty"\' // order_id
-	GrossAmount *int64              \'json:"gross_amount,omitempty" bson:"gross_amount,omitempty"\'
-	Note        *string             \'json:"note,omitempty" bson:"note,omitempty"\'
+	ID          *primitive.ObjectID \`json:"_id,omitempty" bson:"_id,omitempty"\`
+	Email       *string             \`json:"email,omitempty" bson:"email,omitempty"\`
+	Code        *string             \`json:"code,omitempty" bson:"code,omitempty"\` // order_id
+	GrossAmount *int64              \`json:"gross_amount,omitempty" bson:"gross_amount,omitempty"\`
+	Note        *string             \`json:"note,omitempty" bson:"note,omitempty"\`
 
 	// with payment gateway
-	SnapURL       *string \'json:"snap_url,omitempty"    bson:"snap_url,omitempty"\'
-	Status        *string \'json:"status,omitempty"      bson:"status,omitempty"\' // PENDING, PAID, CANCEL, REJECTED
-	PaymentMethod *string \'json:"payment_method,omitempty"  bson:"payment_method,omitempty"\'
+	SnapURL       *string \`json:"snap_url,omitempty"    bson:"snap_url,omitempty"\`
+	Status        *string \`json:"status,omitempty"      bson:"status,omitempty"\` // PENDING, PAID, CANCEL, REJECTED
+	PaymentMethod *string \`json:"payment_method,omitempty"  bson:"payment_method,omitempty"\`
 
-	CreatedAt *primitive.DateTime \'json:"created_at,omitempty" bson:"created_at,omitempty"\'
-	PaymentAt *primitive.DateTime \'json:"payment_at,omitempty" bson:"payment_at,omitempty"\'
+	CreatedAt *primitive.DateTime \`json:"created_at,omitempty" bson:"created_at,omitempty"\`
+	PaymentAt *primitive.DateTime \`json:"payment_at,omitempty" bson:"payment_at,omitempty"\`
 }
 
 func TransactionMigrate(ctx context.Context, client *mongo.Client) {
@@ -1797,26 +1797,26 @@ import (
 )
 
 type User struct {
-	ID       *primitive.ObjectID \'bson:"_id,omitempty" json:"_id,omitempty"\'
-	Email    *string             \'bson:"email,omitempty" json:"email,omitempty"\'         // SSO
-	RoleCode *string             \'bson:"role_code,omitempty" json:"role_code,omitempty"\' // admin,
-	Balance  *int64              \'bson:"balance,omitempty" json:"balance,omitempty"\'     // default: 0
+	ID       *primitive.ObjectID \`bson:"_id,omitempty" json:"_id,omitempty"\`
+	Email    *string             \`bson:"email,omitempty" json:"email,omitempty"\`         // SSO
+	RoleCode *string             \`bson:"role_code,omitempty" json:"role_code,omitempty"\` // admin,
+	Balance  *int64              \`bson:"balance,omitempty" json:"balance,omitempty"\`     // default: 0
 
 	// Info
-	Name    *string \'bson:"name,omitempty" json:"name,omitempty"\'
-	Address *string \'bson:"address,omitempty" json:"address,omitempty"\'
+	Name    *string \`bson:"name,omitempty" json:"name,omitempty"\`
+	Address *string \`bson:"address,omitempty" json:"address,omitempty"\`
 
-	Whatsapp *string \'bson:"whatsapp,omitempty" json:"whatsapp,omitempty"\'
+	Whatsapp *string \`bson:"whatsapp,omitempty" json:"whatsapp,omitempty"\`
 
 	// Settings
-	IsDarkMode *bool \'bson:"is_dark_mode,omitempty" json:"is_dark_mode,omitempty"\' // default: false
-	IsActive   *bool \'bson:"is_active,omitempty" json:"is_active,omitempty"\'       // default: true
+	IsDarkMode *bool \`bson:"is_dark_mode,omitempty" json:"is_dark_mode,omitempty"\` // default: false
+	IsActive   *bool \`bson:"is_active,omitempty" json:"is_active,omitempty"\`       // default: true
 
 	// timestamps (SLA)
-	CreatedAt *primitive.DateTime \'json:"created_at,omitempty"  bson:"created_at,omitempty"\'
-	UpdatedAt *primitive.DateTime \'json:"updated_at,omitempty"  bson:"updated_at,omitempty"\'
+	CreatedAt *primitive.DateTime \`json:"created_at,omitempty"  bson:"created_at,omitempty"\`
+	UpdatedAt *primitive.DateTime \`json:"updated_at,omitempty"  bson:"updated_at,omitempty"\`
 
-	UpdateHistory *[]User \'bson:"update_history,omitempty" json:"update_history,omitempty"\'
+	UpdateHistory *[]User \`bson:"update_history,omitempty" json:"update_history,omitempty"\`
 }
 
 func UserMigrate(ctx context.Context, client *mongo.Client) {
