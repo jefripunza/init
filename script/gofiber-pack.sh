@@ -486,9 +486,9 @@ func (ref MongoDB) Connect() (*mongo.Client, context.Context, error) {
 }
 
 type MongoDbIndex struct {
-	Name   string 'json:"name"'
-	Unique bool   'json:"unique"'
-	Keys   bson.M 'json:"keys"'
+	Name   string \`json:"name"\`
+	Unique bool   \`json:"unique"\`
+	Keys   bson.M \`json:"keys"\`
 }
 
 func (ref MongoDB) CreateIndex(ctx context.Context, database *mongo.Database, collectionName string, listIndex []MongoDbIndex) error {
