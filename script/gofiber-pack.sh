@@ -1286,21 +1286,21 @@ import (
 )
 
 type Dashboard struct {
-	ID     *primitive.ObjectID \'bson:"_id,omitempty" json:"_id,omitempty"\'
-	UserID *primitive.ObjectID \'bson:"user_id,omitempty" json:"user_id,omitempty"\'
+	ID     *primitive.ObjectID \`bson:"_id,omitempty" json:"_id,omitempty"\`
+	UserID *primitive.ObjectID \`bson:"user_id,omitempty" json:"user_id,omitempty"\`
 
 	// pointer
-	Year  *int \'bson:"year,omitempty" json:"year,omitempty"\'
-	Month *int \'bson:"month,omitempty" json:"month,omitempty"\'
-	Day   *int \'bson:"day,omitempty" json:"day,omitempty"\'
+	Year  *int \`bson:"year,omitempty" json:"year,omitempty"\`
+	Month *int \`bson:"month,omitempty" json:"month,omitempty"\`
+	Day   *int \`bson:"day,omitempty" json:"day,omitempty"\`
 
 	// value
-	BalanceAvailable *int \'bson:"balance_available,omitempty" json:"balance_available,omitempty"\'
-	TotalPayment     *int \'bson:"total_payment,omitempty" json:"total_payment,omitempty"\'
-	PendingPayment   *int \'bson:"pending_payment,omitempty" json:"pending_payment,omitempty"\'
+	BalanceAvailable *int \`bson:"balance_available,omitempty" json:"balance_available,omitempty"\`
+	TotalPayment     *int \`bson:"total_payment,omitempty" json:"total_payment,omitempty"\`
+	PendingPayment   *int \`bson:"pending_payment,omitempty" json:"pending_payment,omitempty"\`
 
 	// recap data
-	Transactions *[]Transaction \'bson:"transactions,omitempty" json:"transactions,omitempty"\'
+	Transactions *[]Transaction \`bson:"transactions,omitempty" json:"transactions,omitempty"\`
 }
 
 func DashboardMigrate(ctx context.Context, client *mongo.Client) {
@@ -2647,26 +2647,26 @@ import (
 
 // Struct untuk item
 type SawangKeuanganItem struct {
-	Name     string 'json:"name"'
-	Price    int    'json:"price"'
-	Qty      int    'json:"qty"'
-	Category string 'json:"category"'
+	Name     string \`json:"name"\`
+	Price    int    \`json:"price"\`
+	Qty      int    \`json:"qty"\`
+	Category string \`json:"category"\`
 }
 
 // Struct untuk payload request
 type SawangKeuanganPaymentRequest struct {
-	CustomerName  string               'json:"customer_name"'
-	CustomerEmail string               'json:"customer_email"'
-	Items         []SawangKeuanganItem 'json:"items"'
+	CustomerName  string               \`json:"customer_name"\`
+	CustomerEmail string               \`json:"customer_email"\`
+	Items         []SawangKeuanganItem \`json:"items"\`
 }
 
 type SawangKeuanganDataResponse struct {
-	SnapURL string 'json:"snap_url"'
-	TrxID   string 'json:"trx_id"'
+	SnapURL string \`json:"snap_url"\`
+	TrxID   string \`json:"trx_id"\`
 }
 type SawangKeuanganResponse struct {
-	Data    SawangKeuanganDataResponse 'json:"data"'
-	Message string                     'json:"message"'
+	Data    SawangKeuanganDataResponse \`json:"data"\`
+	Message string                     \`json:"message"\`
 }
 
 func SawangKeuanganCreatePayment(payload SawangKeuanganPaymentRequest) (*SawangKeuanganDataResponse, error) {
@@ -3152,13 +3152,13 @@ import (
 type JWT struct{}
 
 type JwtClaims struct {
-	Email     string 'json:"email"'
-	Name      string 'json:"name"'
-	FirstName string 'json:"first_name"'
-	LastName  string 'json:"last_name"'
-	RoleCode  string 'json:"role_code"'
-	Iat       int64  'json:"iat"'
-	Jti       string 'json:"jti"'
+	Email     string \`json:"email"\`
+	Name      string \`json:"name"\`
+	FirstName string \`json:"first_name"\`
+	LastName  string \`json:"last_name"\`
+	RoleCode  string \`json:"role_code"\`
+	Iat       int64  \`json:"iat"\`
+	Jti       string \`json:"jti"\`
 }
 
 func (ref JWT) Generate(email string, name string, role_code string) (string, string, error) {
@@ -3374,13 +3374,13 @@ type RestOptions struct {
 }
 
 type RestResponseError struct {
-	StatusCode int    \'json:"status_code"\'
-	Message    string \'json:"message"\'
-	Response   string \'json:"response"\'
+	StatusCode int    \`json:"status_code"\`
+	Message    string \`json:"message"\`
+	Response   string \`json:"response"\`
 }
 
 type RestErrorMessage struct {
-	Message string \'json:"message"\'
+	Message string \`json:"message"\`
 }
 
 func ParseErrorResponse(response string) (*RestErrorMessage, error) {
