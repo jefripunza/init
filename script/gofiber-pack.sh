@@ -486,9 +486,9 @@ func (ref MongoDB) Connect() (*mongo.Client, context.Context, error) {
 }
 
 type MongoDbIndex struct {
-	Name   string \'json:"name"\'
-	Unique bool   \'json:"unique"\'
-	Keys   bson.M \'json:"keys"\'
+	Name   string 'json:"name"'
+	Unique bool   'json:"unique"'
+	Keys   bson.M 'json:"keys"'
 }
 
 func (ref MongoDB) CreateIndex(ctx context.Context, database *mongo.Database, collectionName string, listIndex []MongoDbIndex) error {
@@ -530,27 +530,27 @@ package dto
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type AuthEncryptBody struct {
-	Text string \'json:"text"\'
+	Text string 'json:"text"'
 }
 type AuthDecryptBody struct {
-	EncryptedText string \'json:"encrypted_text"\'
+	EncryptedText string 'json:"encrypted_text"'
 }
 
 type AuthTokenValidation struct {
-	ID       *primitive.ObjectID \'bson:"_id,omitempty"     json:"_id,omitempty"\'
-	Email    *string             \'bson:"email,omitempty" json:"email,omitempty"\'         // SSO
-	RoleCode *string             \'bson:"role_code,omitempty" json:"role_code,omitempty"\' // admin,
-	Balance  *int64              \'bson:"balance,omitempty" json:"balance,omitempty"\'     // default: 0
+	ID       *primitive.ObjectID 'bson:"_id,omitempty" json:"_id,omitempty"'
+	Email    *string             'bson:"email,omitempty" json:"email,omitempty"'         // SSO
+	RoleCode *string             'bson:"role_code,omitempty" json:"role_code,omitempty"' // admin,
+	Balance  *int64              'bson:"balance,omitempty" json:"balance,omitempty"'     // default: 0
 
 	// Info
-	Name      string  \'bson:"name" json:"name"\'
-	Address   string  \'bson:"address" json:"address"\'
+	Name      string 'bson:"name" json:"name"'
+	Address   string 'bson:"address" json:"address"'
 
-	Whatsapp      string  \'bson:"whatsapp" json:"whatsapp"\'
+	Whatsapp      string  'bson:"whatsapp" json:"whatsapp"'
 
 	// Settings
-	IsDarkMode *bool \'bson:"is_dark_mode,omitempty" json:"is_dark_mode,omitempty"\' // default: false
-	IsActive   *bool \'bson:"is_active,omitempty" json:"is_active,omitempty"\'       // default: true
+	IsDarkMode *bool 'bson:"is_dark_mode,omitempty" json:"is_dark_mode,omitempty"' // default: false
+	IsActive   *bool 'bson:"is_active,omitempty" json:"is_active,omitempty"'       // default: true
 }
 EOL
 
@@ -559,16 +559,15 @@ generate "./server/dto/callback.dto.go" << EOL
 package dto
 
 type CallbackUpdateCustomer struct {
-	Email string \'json:"email"\'
-	Name  string \'json:"name"\'
+	Email string 'json:"email"'
+	Name  string 'json:"name"'
 }
 type CallbackUpdateBody struct {
-	TrxID         string                 \'json:"trx_id"\'
-	Amount        int                    \'json:"amount"\'
-	Customer      CallbackUpdateCustomer \'json:"customer"\'
-	PaymentAt     string                 \'json:"payment_at"\'
-	PaymentMethod string                 \'json:"payment_method"\'
-	Status        string                 \'json:"status"\'
+	TrxID         string                 'json:"trx_id"'
+	Customer      CallbackUpdateCustomer 'json:"customer"'
+	PaymentAt     string                 'json:"payment_at"'
+	PaymentMethod string                 'json:"payment_method"'
+	Status        string                 'json:"status"'
 }
 EOL
 
@@ -577,7 +576,7 @@ generate "./server/dto/topup.dto.go" << EOL
 package dto
 
 type TopupCreateBody struct {
-	Amount int \'json:"amount"\'
+	Amount int 'json:"amount"'
 }
 EOL
 
@@ -586,9 +585,9 @@ generate "./server/dto/transaction.dto.go" << EOL
 package dto
 
 type TransactionActionBody struct {
-	Status string \'json:"status" validate:"required,oneof=approved rejected"\'
-	Amount int64  \'json:"amount"\'
-	Note   string \'json:"note,omitempty"\'
+	Status string 'json:"status" validate:"required,oneof=approved rejected"'
+	Amount int64  'json:"amount"'
+	Note   string 'json:"note,omitempty"'
 }
 EOL
 
@@ -598,10 +597,10 @@ package dto
 
 type UserEditBody struct {
 	// Info
-	Name    string \'json:"name" validate:"required,min=3"\'
-	Address string \'json:"address" validate:"required"\'
+	Name    string 'json:"name" validate:"required,min=3"'
+	Address string 'json:"address" validate:"required"'
 
-	Whatsapp string \'json:"whatsapp" validate:"required,e164"\' // E.164 format
+	Whatsapp string 'json:"whatsapp" validate:"required,e164"' // E.164 format
 }
 EOL
 
@@ -2648,26 +2647,26 @@ import (
 
 // Struct untuk item
 type SawangKeuanganItem struct {
-	Name     string \'json:"name"\'
-	Price    int    \'json:"price"\'
-	Qty      int    \'json:"qty"\'
-	Category string \'json:"category"\'
+	Name     string 'json:"name"'
+	Price    int    'json:"price"'
+	Qty      int    'json:"qty"'
+	Category string 'json:"category"'
 }
 
 // Struct untuk payload request
 type SawangKeuanganPaymentRequest struct {
-	CustomerName  string               \'json:"customer_name"\'
-	CustomerEmail string               \'json:"customer_email"\'
-	Items         []SawangKeuanganItem \'json:"items"\'
+	CustomerName  string               'json:"customer_name"'
+	CustomerEmail string               'json:"customer_email"'
+	Items         []SawangKeuanganItem 'json:"items"'
 }
 
 type SawangKeuanganDataResponse struct {
-	SnapURL string \'json:"snap_url"\'
-	TrxID   string \'json:"trx_id"\'
+	SnapURL string 'json:"snap_url"'
+	TrxID   string 'json:"trx_id"'
 }
 type SawangKeuanganResponse struct {
-	Data    SawangKeuanganDataResponse \'json:"data"\'
-	Message string                     \'json:"message"\'
+	Data    SawangKeuanganDataResponse 'json:"data"'
+	Message string                     'json:"message"'
 }
 
 func SawangKeuanganCreatePayment(payload SawangKeuanganPaymentRequest) (*SawangKeuanganDataResponse, error) {
@@ -3153,13 +3152,13 @@ import (
 type JWT struct{}
 
 type JwtClaims struct {
-	Email     string \'json:"email"\'
-	Name      string \'json:"name"\'
-	FirstName string \'json:"first_name"\'
-	LastName  string \'json:"last_name"\'
-	RoleCode  string \'json:"role_code"\'
-	Iat       int64  \'json:"iat"\'
-	Jti       string \'json:"jti"\'
+	Email     string 'json:"email"'
+	Name      string 'json:"name"'
+	FirstName string 'json:"first_name"'
+	LastName  string 'json:"last_name"'
+	RoleCode  string 'json:"role_code"'
+	Iat       int64  'json:"iat"'
+	Jti       string 'json:"jti"'
 }
 
 func (ref JWT) Generate(email string, name string, role_code string) (string, string, error) {
