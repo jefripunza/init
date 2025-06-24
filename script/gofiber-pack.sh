@@ -1003,7 +1003,7 @@ func Server(embeddedFiles embed.FS) *fiber.App {
 	app.Use("*", func(c *fiber.Ctx) error {
 		reqPath := c.Path()
 
-		if strings.HasPrefix(reqPath, "/api") || strings.HasPrefix(reqPath, "/papers") || strings.HasPrefix(reqPath, "/icon") || strings.HasPrefix(reqPath, "/file") || strings.HasPrefix(reqPath, "/ws") {
+		if strings.HasPrefix(reqPath, "/api") || strings.HasPrefix(reqPath, "/sso") || strings.HasPrefix(reqPath, "/papers") || strings.HasPrefix(reqPath, "/icon") || strings.HasPrefix(reqPath, "/file") || strings.HasPrefix(reqPath, "/ws") {
 			return c.Next()
 		}
 
@@ -1013,7 +1013,11 @@ func Server(embeddedFiles embed.FS) *fiber.App {
 
 		file, err := fileServer.Open(reqPath)
 		if err != nil {
-			return c.SendStatus(fiber.StatusNotFound)
+			reqPath = "/index.html" // intinya akan di handle oleh react-router-dom
+			file, err = fileServer.Open(reqPath)
+			if err != nil {
+				return c.SendStatus(fiber.StatusNotFound)
+			}
 		}
 		defer file.Close()
 
