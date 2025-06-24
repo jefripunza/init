@@ -3777,19 +3777,21 @@ EOL
 ###                          GENERATION: Frontend                              ###
 ### ========================================================================== ###
 
-echo "Revision files..."
+# if file package.json is exist
+if [ -f "package.json" ]; then
+  echo "Revision Frontend files..."
 
 # tsconfig.app.json input paths menjadi @/*
 # Use jq to update tsconfig.app.json with paths configuration
 if command -v jq &> /dev/null; then
-    # If jq is available, use it to properly update the JSON
-    jq '.compilerOptions.paths = {"@/*": ["src/*"]}' tsconfig.app.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.app.json
-    echo "Updated tsconfig.app.json with paths configuration using jq"
+  # If jq is available, use it to properly update the JSON
+  jq '.compilerOptions.paths = {"@/*": ["src/*"]}' tsconfig.app.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.app.json
+  echo "Updated tsconfig.app.json with paths configuration using jq"
 else
-    # Fallback to sed if jq is not available
-    # This is less reliable but works in many cases
-    sed -i 's/"compilerOptions": {/"compilerOptions": {\n    "paths": {\n      "@\/*": ["src\/*"]\n    },/g' tsconfig.app.json
-    echo "Updated tsconfig.app.json with paths configuration using sed"
+  # Fallback to sed if jq is not available
+  # This is less reliable but works in many cases
+  sed -i 's/"compilerOptions": {/"compilerOptions": {\n    "paths": {\n      "@\/*": ["src\/*"]\n    },/g' tsconfig.app.json
+  echo "Updated tsconfig.app.json with paths configuration using sed"
 fi
 
 # Create or update vite.config.ts with resolve.alias configuration
@@ -4604,7 +4606,7 @@ export const useRefreshStore = create<RefreshState>()((set) => ({
 }));
 EOL
 
-
+fi
 
 ### ========================================================================== ###
 ###                                  Setup                                     ###
