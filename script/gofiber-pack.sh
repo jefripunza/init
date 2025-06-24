@@ -3792,17 +3792,39 @@ else
     echo "Updated tsconfig.app.json with paths configuration using sed"
 fi
 
-# Update package.json to add moduleNameMapper in Jest configuration
-if command -v jq &> /dev/null; then
-    # If jq is available, use it to properly update the JSON
-    jq '.jest.moduleNameMapper = {"^@/(.*)$": "<rootDir>/../src/$1"}' package.json > package.tmp.json && mv package.tmp.json package.json
-    echo "Updated package.json with Jest moduleNameMapper configuration using jq"
-else
-    # Fallback to sed if jq is not available
-    # This approach is less reliable but works in many cases
-    sed -i 's/"jest": {/"jest": {\n    "moduleNameMapper": {\n      "\^@\/\(.*\)\$": "<rootDir>\/..\/src\/\$1"\n    },/g' package.json
-    echo "Updated package.json with Jest moduleNameMapper configuration using sed"
-fi
+# Create or update vite.config.ts with resolve.alias configuration
+generate "./vite.config.ts" << EOL
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import path from "path";
+import { componentTagger } from "lovable-tagger";
+
+// https://vitejs.dev/config/
+export default defineConfig(({ mode }) => ({
+  server: {
+    // host: "::",
+    host: true, // Here
+    port: 8080,
+  },
+  plugins: [react(), mode === "development" && componentTagger()].filter(
+    Boolean
+  ),
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+}));
+EOL
+echo "Created vite.config.ts with resolve.alias configuration"
+
+
+
+
+
+
+
+
 
 
 
@@ -3817,6 +3839,769 @@ if (window.location.host.includes(".lovable.app")) {
   HOST_API = "https://d3v.veyra.id";
 }
 export { HOST_API };
+EOL
+
+
+
+
+
+
+
+
+
+
+
+
+
+# >> Src (Model)
+
+# create src/types/model/user.d.ts
+generate "./src/types/model/user.d.ts" << EOL
+export type UserRole =
+  | "*" // all in access
+  | "administrator" // hanya jefri yg bisa akses
+  | "user";
+
+export interface User {
+  _id?: string;
+  email: string; // SSO
+  role_code?: UserRole; // hanya bisa di update oleh admin
+
+  name: string;
+  balance: number;
+
+  is_dark_mode?: boolean; // default: false
+  is_active?: boolean; // default: true
+
+  created_at: string;
+  joined_at?: string;
+
+  // custom
+  business_name?: string;
+}
+EOL
+
+# create src/types/model/transaction.d.ts
+generate "./src/types/model/transaction.d.ts" << EOL
+export interface Transaction {
+  _id?: string;
+  user_id: string;
+  trx_id: string;
+  amount: number;
+  snap_url: string;
+  status: "pending" | "paid" | "expired";
+  created_at: string;
+  payment_method?: string;
+  payment_at?: string;
+}
+EOL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# >> Src (DTO)
+
+# create src/types/dto/auth.d.ts
+generate "./src/types/dto/auth.d.ts" << EOL
+import { User } from "@/types/model/user";
+
+export interface IAuthExchangeTokenResponse {
+  message: string;
+  data: {
+    token: string;
+  };
+}
+
+export interface IAuthTokenValidationResponse {
+  message: string;
+  data: {
+    user: User;
+  };
+}
+
+export interface IAuthLogoutResponse {
+  message: string;
+  data: {
+    token: string;
+  };
+}
+EOL
+
+# create src/types/dto/transaction.d.ts
+generate "./src/types/dto/transaction.d.ts" << EOL
+import { Transaction } from "@/types/model/transaction";
+
+export interface ITransactionCreateTopupData {
+  trx_id: string;
+  snap_url: string;
+}
+export interface ITransactionCreateTopupResponse {
+  message: string;
+  data: ITransactionCreateTopupData;
+}
+
+export interface ITransactionListTopupData {
+  rows: Transaction[];
+  total_amount: number;
+}
+export interface ITransactionListTopupResponse {
+  message: string;
+  data: ITransactionListTopupData;
+}
+EOL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# >> Src (Lib)
+
+# create src/lib/queryOptions/ipQueryOptions.ts
+generate "./src/lib/queryOptions/ipQueryOptions.ts" << EOL
+import { getIP } from '@/utils/ip.util'
+import { queryOptions } from '@tanstack/react-query'
+
+export const createGetIpQueryOptions = () => {
+  return queryOptions({
+    queryKey: ['ip'],
+    queryFn: ({ signal }) => getIP({ signal }),
+  })
+}
+EOL
+
+# create src/lib/queryClient.ts
+generate "./src/lib/queryClient.ts" << EOL
+import { QueryClient } from '@tanstack/react-query'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+})
+
+export default queryClient
+EOL
+
+# create src/lib/utils.ts
+generate "./src/lib/utils.ts" << EOL
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+EOL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# >> Src (Utils)
+
+# create src/utils/async.util.ts
+generate "./src/utils/async.util.ts" << EOL
+export const delay = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms))
+EOL
+
+# create src/utils/converter.util.ts
+generate "./src/utils/converter.util.ts" << EOL
+import { format, parseISO } from "date-fns";
+import { id } from "date-fns/locale";
+
+export const scale = (
+  value: number,
+  oldMin: number = 0,
+  oldMax: number = 255, // 1 byte
+  newMin: number = 0,
+  newMax: number = 100 // percentage
+) => ((value - oldMin) / (oldMax - oldMin)) * (newMax - newMin) + newMin;
+
+export const formatPrice = (price: number | bigint) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(price);
+
+export const datetimeFormatIndo = (date: string) =>
+  format(parseISO(date), "dd MMMM yyyy - HH:mm 'WIB'", { locale: id });
+
+export const dateFormatIndo = (date: string) =>
+  format(parseISO(date), "dd MMMM yyyy", { locale: id });
+
+export const dateFormat = (date: string) =>
+  format(parseISO(date), "yyyy-MM-dd", { locale: id });
+EOL
+
+# create src/utils/encryption.util.ts
+generate "./src/utils/encryption.util.ts" << EOL
+import CryptoJS from "crypto-js";
+
+export enum EncryptionMethods {
+  AES = "AES",
+  TripleDES = "TripleDES",
+  DES = "DES",
+  Rabbit = "Rabbit",
+  RC4 = "RC4",
+  base64 = "base64",
+}
+
+export interface EnigmaSchema {
+  method: EncryptionMethods;
+  key?: () => string;
+}
+
+export type Method = Exclude<keyof typeof EncryptionMethods, "base64">;
+
+// Define the type for browser_id parameter
+type BrowserId = string;
+
+export function getSecretKey(browser_id: BrowserId): string {
+  const origin = window.location.host;
+  const secret_key = \`\${origin}#\${browser_id}\`;
+  return secret_key;
+}
+
+// Helper functions for common tasks
+export function hashKey(key: string): string {
+  return CryptoJS.SHA256(key).toString(CryptoJS.enc.Hex);
+}
+
+// Encryption and Decryption methods
+export function encryptMethod(
+  method: Method,
+  key: string,
+  plaintext: string
+): string {
+  return CryptoJS[method].encrypt(plaintext, key).toString();
+}
+
+export function decryptMethod(
+  method: Method,
+  key: string,
+  cipher_text: string
+): string {
+  return CryptoJS[method].decrypt(cipher_text, key).toString(CryptoJS.enc.Utf8);
+}
+
+function applyMethod(
+  text: string,
+  layer: EnigmaSchema,
+  isEncrypt: boolean
+): string {
+  if (layer.method === EncryptionMethods.base64) {
+    return isEncrypt
+      ? CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(text))
+      : CryptoJS.enc.Base64.parse(text).toString(CryptoJS.enc.Utf8);
+  } else if (layer.key) {
+    const key = layer.key();
+    return isEncrypt
+      ? encryptMethod(layer.method, hashKey(key), text)
+      : decryptMethod(layer.method, hashKey(key), text);
+  }
+  throw new Error(\`Key function missing for method: \${layer.method}\`);
+}
+
+export function encode(enigma_schema: EnigmaSchema[], text: string): string {
+  return enigma_schema.reduce(
+    (cipher_text, layer) => applyMethod(cipher_text, layer, true),
+    text
+  );
+}
+
+export function decode(
+  enigma_schema: EnigmaSchema[],
+  encrypted: string
+): string {
+  return enigma_schema.reduceRight(
+    (plaintext, layer) => applyMethod(plaintext, layer, false),
+    encrypted
+  );
+}
+EOL
+
+# create src/utils/fingerprint.util.ts
+generate "./src/utils/fingerprint.util.ts" << EOL
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+
+export async function getBrowserId() {
+  const fp = await FingerprintJS.load();
+  const fpGet = await fp.get();
+  return fpGet.visitorId;
+}
+EOL
+
+# create src/utils/generate.util.ts
+generate "./src/utils/generate.util.ts" << EOL
+export const randomInt = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+EOL
+
+# create src/utils/getter.util.ts
+generate "./src/utils/getter.util.ts" << EOL
+export const GetCsv = <T>(
+  file: File,
+  requiredHeaders: string[]
+): Promise<T[]> => {
+  return new Promise((resolve, reject) => {
+    // Validate file type
+    if (!file.name.endsWith(".csv")) {
+      reject("Please upload a CSV file");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const csvContent = e.target?.result as string;
+      const rows = csvContent.split("\n").filter((row) => row.trim() !== ""); // Remove empty rows
+
+      // Get headers from first row
+      const headers = rows[0]
+        .split(";")
+        .map((header) => header.trim().toLowerCase());
+
+      // Validate required headers
+      const missingHeaders = requiredHeaders.filter(
+        (h) => !headers.includes(h)
+      );
+      if (missingHeaders.length > 0) {
+        reject(\`Missing required headers: \${missingHeaders.join(", ")}\`);
+        return;
+      }
+
+      // Parse data rows
+      const users = rows.slice(1).map((row) => {
+        const values = row.split(";").map((val) => val.trim());
+        const user: Record<string, string> = {};
+        headers.forEach((header, index) => {
+          user[header] = values[index] || "";
+        });
+        return user;
+      });
+
+      resolve(users as T[]);
+    };
+    reader.readAsText(file);
+  });
+};
+EOL
+
+# create src/utils/service.util.ts
+generate "./src/utils/service.util.ts" << EOL
+import axios, { type AxiosError, type AxiosResponse } from "axios";
+import { HOST_API } from "@/environments";
+import { getBrowserId } from "@/utils/fingerprint.util";
+import queryClient from "@/lib/queryClient";
+import { createGetIpQueryOptions } from "@/lib/queryOptions/ipQueryOptions";
+
+// Make Middleware ...
+const requestInterceptor = async (config: any, _service_name: string) => {
+  const browserId = await getBrowserId();
+  config.headers["X-Device-ID"] = browserId;
+  try {
+    const ip = await queryClient.ensureQueryData(createGetIpQueryOptions());
+    config.headers["X-Client-IP"] = ip;
+  } catch (error) {
+    console.error("Failed to get client IP:", error);
+  }
+  if (!config.headers.Authorization) {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = \`Bearer \${token}\`;
+    }
+  }
+  return config;
+};
+
+interface ResponseNegativeDataError {
+  context: string;
+  message: string;
+}
+export interface ResponseNegativeData {
+  success: boolean;
+  errors: ResponseNegativeDataError[];
+}
+
+export interface ResponseServer<Data, Headers = any> {
+  success: boolean;
+  status_code: number;
+  status_text: string;
+  headers: Headers;
+  data: Data | ResponseNegativeData;
+  // error
+  error_message?: string;
+  error_code?: number;
+}
+
+const responsePositiveInterceptor = <Data, Headers = any>(
+  response: AxiosResponse<any, any>,
+  _service_name: string
+): ResponseServer<Data, Headers> => {
+  return {
+    success: true,
+    status_code: response.status,
+    status_text: response.statusText,
+    headers: response.headers as Headers,
+    data: response.data,
+  };
+};
+
+const responseNegativeInterceptor = (
+  error: AxiosError
+): ResponseServer<unknown, unknown> => {
+  let error_code = 500;
+  if (typeof error.code === "string") {
+    error_code = parseInt(error.code);
+  }
+  return {
+    success: false,
+    error_code,
+    error_message: error.message,
+    status_code: error.status as number,
+    status_text: (error.response as any).statusText,
+    headers: (error.response as unknown as AxiosResponse<unknown, unknown>)
+      .headers,
+    data: (error.response as AxiosResponse<unknown, unknown>).data,
+  };
+};
+
+// Make Service ...
+
+export const Service = axios.create({
+  baseURL: HOST_API,
+});
+Service.interceptors.request.use(
+  async (config) => await requestInterceptor(config, "service")
+);
+Service.interceptors.response.use(
+  (response): any => responsePositiveInterceptor(response, "service"),
+  (error) => responseNegativeInterceptor(error)
+);
+EOL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# >> Src (Service)
+
+# create src/service/auth.service.ts
+generate "./src/service/auth.service.ts" << EOL
+import { IAuthExchangeTokenResponse, IAuthLogoutResponse, IAuthTokenValidationResponse } from "@/types/dto/auth";
+import {
+  ResponseNegativeData,
+  ResponseServer,
+  Service,
+} from "@/utils/service.util";
+
+export const AuthExchangeToken = async (token: string) => {
+  try {
+    const res = (await Service.get("/api/auth/v1/exchange-token", {
+      headers: {
+        Authorization: \`Bearer \${token}\`,
+      },
+    })) as ResponseServer<IAuthExchangeTokenResponse>;
+    if (res.success) {
+      const data = res.data as IAuthExchangeTokenResponse;
+      localStorage.setItem("token", data.data.token);
+      return {
+        success: true,
+        message: "Token validation success",
+      };
+    } else {
+      localStorage.removeItem("token");
+      return {
+        success: false,
+        message: (res.data as IAuthExchangeTokenResponse).message,
+        error: (res.data as ResponseNegativeData)?.errors,
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: (error as Error).message,
+    };
+  }
+};
+
+export const AuthTokenValidation = async () => {
+  try {
+    const res = (await Service.get(
+      "/api/auth/v1/token-validation"
+    )) as ResponseServer<IAuthTokenValidationResponse>;
+    if (res.success) {
+      const data = res.data as IAuthTokenValidationResponse;
+      return {
+        success: true,
+        message: "Token validation success",
+        data: data.data,
+      };
+    } else {
+      localStorage.removeItem("token");
+      return {
+        success: false,
+        message: (res.data as IAuthTokenValidationResponse).message,
+        error: (res.data as ResponseNegativeData)?.errors,
+      };
+    }
+  } catch (error) {
+    localStorage.removeItem("token");
+    return {
+      success: false,
+      message: (error as Error).message,
+    };
+  }
+};
+
+export const AuthLogout = async () => {
+  try {
+    const res = (await Service.delete(
+      "/api/auth/v1/logout"
+    )) as ResponseServer<IAuthLogoutResponse>;
+    if (res.success) {
+      const data = res.data as IAuthLogoutResponse;
+      return {
+        success: true,
+        message: "Logout success",
+        data: data.data,
+      };
+    } else {
+      localStorage.removeItem("token");
+      return {
+        success: false,
+        message: (res.data as IAuthLogoutResponse).message,
+        error: (res.data as ResponseNegativeData)?.errors,
+      };
+    }
+  } catch (error) {
+    localStorage.removeItem("token");
+    return {
+      success: false,
+      message: (error as Error).message,
+    };
+  }
+};
+EOL
+
+# create src/service/transaction.service.ts
+generate "./src/service/transaction.service.ts" << EOL
+import {
+  ITransactionCreateTopupResponse,
+  ITransactionListTopupResponse,
+} from "@/types/dto/transaction";
+import {
+  ResponseNegativeData,
+  ResponseServer,
+  Service,
+} from "@/utils/service.util";
+
+export const TransactionCreateTopup = async (amount: number) => {
+  try {
+    const res = (await Service.post("/api/transaction/v1/topup", {
+      amount,
+    })) as ResponseServer<ITransactionCreateTopupResponse>;
+    if (res.success) {
+      const data = res.data as ITransactionCreateTopupResponse;
+      return {
+        success: true,
+        message: "Transaction create topup success",
+        data: data.data,
+      };
+    } else {
+      return {
+        success: false,
+        message: (res.data as ITransactionCreateTopupResponse).message,
+        error: (res.data as ResponseNegativeData)?.errors,
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: (error as Error).message,
+    };
+  }
+};
+
+export const TransactionListTopup = async () => {
+  try {
+    const res = (await Service.get(
+      "/api/transaction/v1/topup"
+    )) as ResponseServer<ITransactionListTopupResponse>;
+    if (res.success) {
+      const data = res.data as ITransactionListTopupResponse;
+      return {
+        success: true,
+        message: "Transaction list topup success",
+        data: data.data,
+      };
+    } else {
+      return {
+        success: false,
+        message: (res.data as ITransactionListTopupResponse).message,
+        error: (res.data as ResponseNegativeData)?.errors,
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: (error as Error).message,
+    };
+  }
+};
+EOL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# >> Src (Store)
+
+# create src/store/auth.ts
+generate "./src/store/auth.ts" << EOL
+import { create } from "zustand";
+import { googleLogout } from "@react-oauth/google";
+import {
+  AuthExchangeToken,
+  AuthLogout,
+  AuthTokenValidation,
+} from "@/services/auth.service";
+import { User } from "@/types/model/user";
+
+interface AuthState {
+  balance: number;
+  setBalance: (balance: number) => void;
+  user: User | null;
+  isAuthLoading: boolean;
+  isTokenLoading: boolean;
+  isAuthenticated: boolean;
+  setAuthLoading: (loading: boolean) => void;
+  login: (token: string) => Promise<void>;
+  tokenValidation: () => Promise<void>;
+  logout: () => void;
+}
+
+export const useAuthStore = create<AuthState>()((set) => ({
+  balance: 0,
+  setBalance: (balance) => set((state) => ({ balance })),
+  user: null,
+  isAuthLoading: true,
+  isTokenLoading: true,
+  isAuthenticated: false,
+  setAuthLoading: (loading: boolean) => set({ isAuthLoading: loading }),
+  login: async (token: string) => {
+    // Mock login logic
+    if (token) {
+      await AuthExchangeToken(token);
+    }
+    return;
+  },
+  tokenValidation: async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      set({ isAuthLoading: false, isTokenLoading: false });
+      return;
+    }
+    const res = await AuthTokenValidation();
+    if (res.success) {
+      const user = res.data.user as User;
+      console.log("User data:", user);
+      set({
+        user,
+        balance: user.balance,
+        isAuthLoading: false,
+        isTokenLoading: false,
+        isAuthenticated: true,
+      });
+      return;
+    }
+    set({ isAuthLoading: false, isTokenLoading: false });
+    return;
+  },
+  logout: async () => {
+    googleLogout();
+    await AuthLogout();
+    localStorage.removeItem("token");
+    set({ user: null, isAuthenticated: false });
+  },
+}));
+EOL
+
+# create src/store/refresh.ts
+generate "./src/store/refresh.ts" << EOL
+import { create } from "zustand";
+
+interface RefreshState {
+  reFetch: Record<string, string>;
+  setReFetch: (key: string, value: string) => void;
+}
+
+export const useRefreshStore = create<RefreshState>()((set) => ({
+  reFetch: {},
+  setReFetch: (key: string, value: string) =>
+    set((state) => ({
+      reFetch: {
+        ...state.reFetch,
+        [key]: value,
+      },
+    })),
+}));
 EOL
 
 
