@@ -55,7 +55,7 @@ project_name=$1
 go mod init $project_name
 
 ### ========================================================================== ###
-###                               GENERATION                                   ###
+###                            GENERATION: Golang                              ###
 ### ========================================================================== ###
 
 echo "Generating files..."
@@ -3768,6 +3768,58 @@ func Run(embeddedFiles embed.FS) {
 	}()
 }
 EOL
+
+
+
+
+
+### ========================================================================== ###
+###                          GENERATION: Frontend                              ###
+### ========================================================================== ###
+
+echo "Revision files..."
+
+# tsconfig.app.json input paths menjadi @/*
+# Use jq to update tsconfig.app.json with paths configuration
+if command -v jq &> /dev/null; then
+    # If jq is available, use it to properly update the JSON
+    jq '.compilerOptions.paths = {"@/*": ["src/*"]}' tsconfig.app.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.app.json
+    echo "Updated tsconfig.app.json with paths configuration using jq"
+else
+    # Fallback to sed if jq is not available
+    # This is less reliable but works in many cases
+    sed -i 's/"compilerOptions": {/"compilerOptions": {\n    "paths": {\n      "@\/*": ["src\/*"]\n    },/g' tsconfig.app.json
+    echo "Updated tsconfig.app.json with paths configuration using sed"
+fi
+
+# Update package.json to add moduleNameMapper in Jest configuration
+if command -v jq &> /dev/null; then
+    # If jq is available, use it to properly update the JSON
+    jq '.jest.moduleNameMapper = {"^@/(.*)$": "<rootDir>/../src/$1"}' package.json > package.tmp.json && mv package.tmp.json package.json
+    echo "Updated package.json with Jest moduleNameMapper configuration using jq"
+else
+    # Fallback to sed if jq is not available
+    # This approach is less reliable but works in many cases
+    sed -i 's/"jest": {/"jest": {\n    "moduleNameMapper": {\n      "\^@\/\(.*\)\$": "<rootDir>\/..\/src\/\$1"\n    },/g' package.json
+    echo "Updated package.json with Jest moduleNameMapper configuration using sed"
+fi
+
+
+
+# >> Src
+
+# create src/environments.ts
+generate "./src/environments.ts" << EOL
+export const env = import.meta.env || process.env || {};
+
+let HOST_API = env.VITE_HOST_API || "";
+if (window.location.host.includes(".lovable.app")) {
+  HOST_API = "https://d3v.veyra.id";
+}
+export { HOST_API };
+EOL
+
+
 
 ### ========================================================================== ###
 ###                                  Setup                                     ###
