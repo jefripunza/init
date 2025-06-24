@@ -3781,18 +3781,40 @@ EOL
 if [ -f "package.json" ]; then
   echo "Revision Frontend files..."
 
-# tsconfig.app.json input paths menjadi @/*
-# Use jq to update tsconfig.app.json with paths configuration
-if command -v jq &> /dev/null; then
-  # If jq is available, use it to properly update the JSON
-  jq '.compilerOptions.paths = {"@/*": ["src/*"]}' tsconfig.app.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.app.json
-  echo "Updated tsconfig.app.json with paths configuration using jq"
-else
-  # Fallback to sed if jq is not available
-  # This is less reliable but works in many cases
-  sed -i 's/"compilerOptions": {/"compilerOptions": {\n    "paths": {\n      "@\/*": ["src\/*"]\n    },/g' tsconfig.app.json
-  echo "Updated tsconfig.app.json with paths configuration using sed"
-fi
+# Create or update tsconfig.app.json with resolve alias configuration
+generate "./tsconfig.app.json" << EOL
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitAny": false,
+    "noFallthroughCasesInSwitch": false,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}
+EOL
+echo "Created tsconfig.app.json with resolve alias configuration"
 
 # Create or update vite.config.ts with resolve.alias configuration
 generate "./vite.config.ts" << EOL
@@ -4641,15 +4663,11 @@ for module in "${module_list_dev[@]}"; do
     bun install --dev $module
 done
 
-fi
+bun install
 
-### ========================================================================== ###
-###                                  Setup                                     ###
-### ========================================================================== ###
+yarn build
 
-echo "Setup..."
-
-go mod tidy
+else
 
 # check jika tidak ada folder dist, maka buatkan dan berika index.html
 if [ ! -d "dist" ]; then
@@ -4668,9 +4686,21 @@ if [ ! -d "dist" ]; then
 EOL
 fi
 
+fi
+
+### ========================================================================== ###
+###                                  Setup                                     ###
+### ========================================================================== ###
+
+echo "Setup..."
+
+go mod tidy
+
 # test compile
 go build -o ${project_name}.exe main.go
 
 ### ========================================================================== ###
+
+./${project_name}.exe
 
 echo "Done!"
