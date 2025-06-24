@@ -4619,6 +4619,28 @@ export const useRefreshStore = create<RefreshState>()((set) => ({
 }));
 EOL
 
+module_list=(
+    "axios"
+    "@tanstack/react-query"
+    "crypto-js"
+    "@fingerprintjs/fingerprintjs"
+)
+module_list_dev=(
+    "@types/node"
+    "@types/axios"
+    "@types/crypto-js"
+)
+
+# loop array dan install module
+for module in "${module_list[@]}"; do
+    bun install $module
+done
+
+# loop array dan install module dev
+for module in "${module_list_dev[@]}"; do
+    bun install --dev $module
+done
+
 fi
 
 ### ========================================================================== ###
