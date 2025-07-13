@@ -18,7 +18,7 @@ new_password=$1
 ### ========================================================================== ###
 
 apt-get update && apt-get upgrade -y
-apt-get install sudo nano python3 curl wget -y
+apt-get install sudo nano python3 curl wget neofetch btop -y
 
 python --version
 
