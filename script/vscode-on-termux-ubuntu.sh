@@ -1,6 +1,6 @@
 #!/bin/bash
 # description: quick installation ubuntu on termux with auto setup bashrc
-# example: curl -fsSL https://init.jefripunza.com/vscode-on-termux-ubuntu.sh -o vscode-on-termux-ubuntu.sh && bash vscode-on-termux-ubuntu.sh
+# example: curl -fsSL https://init.jefripunza.com/vscode-on-termux-ubuntu.sh -o vscode-on-termux-ubuntu.sh && bash vscode-on-termux-ubuntu.sh my-secret-password
 
 set -e # Exit immediately if a command exits with a non-zero status
 ## $1 could be empty, so we need to disable this check
