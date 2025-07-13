@@ -20,7 +20,7 @@ new_password=$1
 apt-get update && apt-get upgrade -y
 apt-get install sudo nano python3 curl wget neofetch btop -y
 
-python --version
+python3 --version
 
 curl -fsSL https://code-server.dev/install.sh | sh
 
