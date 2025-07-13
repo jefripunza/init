@@ -1,5 +1,5 @@
 #!/bin/bash
-# description: quick installation ubuntu on termux with auto setup bashrc
+# description: step 1, quick installation ubuntu on termux with auto setup bashrc
 # example: curl -fsSL https://init.jefripunza.com/termux-to-ubuntu.sh -o termux-to-ubuntu.sh && bash termux-to-ubuntu.sh
 
 set -e # Exit immediately if a command exits with a non-zero status

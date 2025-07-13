@@ -1,5 +1,5 @@
 #!/bin/bash
-# description: quick installation ubuntu on termux with auto setup bashrc
+# description: step 2 (if from termux-to-ubuntu.sh), quick installation vscode on termux with ubuntu with auto setup bashrc
 # example: curl -fsSL https://init.jefripunza.com/vscode-on-termux-ubuntu.sh -o vscode-on-termux-ubuntu.sh && bash vscode-on-termux-ubuntu.sh my-secret-password
 
 set -e # Exit immediately if a command exits with a non-zero status
