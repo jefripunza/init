@@ -40,6 +40,6 @@ fi
 cat <<EOF > /root/.config/code-server/config.yaml
 bind-addr: 0.0.0.0:8080
 auth: password
-password: $project_name
+password: $new_password
 cert: false
 EOF
